@@ -263,7 +263,21 @@ button.plink:hover .pwho b,.plink.nm:hover{text-decoration:underline}
 html.dark .vbadge circle{fill:#8fb4ee}html.dark .vbadge path{fill:#0b0f14}
 .admchip{display:block;width:fit-content;margin:4px 0 2px;padding:1px 10px;border-radius:999px;border:1.5px solid #3d70c0;background:rgba(61,112,192,.22);color:#1d3d73;font:800 11px/1.5 Nunito,sans-serif;letter-spacing:.06em;text-transform:lowercase}
 html.dark .admchip{border-color:#5b8ad6;background:rgba(61,112,192,.32);color:#dbe7ff}
+/* tag especial da adm: azul que passa devagar para o preto e volta */
+.admchip:not(.tag){border-color:#3d70c0;color:#fff;background:linear-gradient(90deg,#3d70c0,#0d1424,#3d70c0,#0d1424);background-size:300% 100%;animation:admflow 9s ease-in-out infinite alternate,admedge 9s ease-in-out infinite alternate;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+html.dark .admchip:not(.tag){border-color:#5b8ad6;color:#fff;background:linear-gradient(90deg,#3d70c0,#000,#3d70c0,#000);background-size:300% 100%}
+@keyframes admflow{from{background-position:0% 50%}to{background-position:100% 50%}}
+@keyframes admedge{0%,100%{border-color:#5b8ad6}50%{border-color:#0d1424}}
+@media (prefers-reduced-motion:reduce){.admchip:not(.tag){animation:none;background:linear-gradient(90deg,#3d70c0,#0d1424)}}
 #pf-name .admchip{font-size:12px;margin-top:6px}
+.admchip.tag{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 24%,transparent);color:color-mix(in srgb,var(--tc) 50%,#000)}
+html.dark .admchip.tag{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 30%,transparent);color:color-mix(in srgb,var(--tc) 35%,#fff)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.chips .admchip{margin:4px 0 2px}#pf-name .chips{justify-content:flex-start}
+.sw{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}.sw label{cursor:pointer}.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw label{position:relative}.sw .cust input[type=color]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.sw span{display:block;width:30px;height:30px;border-radius:50%;background:var(--c);border:3px solid transparent;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.sw input:checked+span{border-color:var(--ink,#1d2b45)}.sw input:focus-visible+span{outline:2px solid #3d70c0;outline-offset:2px}
+#tg-prev{text-align:center;min-height:30px}
 .ov canvas.patch{position:absolute;pointer-events:none;display:block}
 .bx.clean{background:transparent!important;box-shadow:none!important;border-radius:0;line-height:1.22;letter-spacing:.02em;overflow:visible;paint-order:stroke fill;-webkit-text-stroke:var(--sw,0) var(--sc,transparent)}
 .bx.clean.free{transform:translate(-50%,-50%);width:max-content!important;max-width:92%;height:auto!important;display:block;padding:0}
@@ -609,6 +623,39 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
     <div class="rlist" id="pf-list"></div>
   </div>
 </section>
+<dialog id="tagdlg">
+  <h2>Tag personalizada</h2>
+  <p class="hint2" id="tg-who"></p>
+  <label class="dl" for="tg-label">Texto da tag</label>
+  <input class="inp" id="tg-label" maxlength="20" placeholder="ex.: solzinho">
+  <span class="dl">Cor</span>
+  <div class="sw" id="tg-sw">
+    <label title="Amarelo"><input type="radio" name="tg-c" value="#f2b705"><span style="--c:#f2b705"></span></label>
+    <label title="Dourado"><input type="radio" name="tg-c" value="#c9a227"><span style="--c:#c9a227"></span></label>
+    <label title="Laranja"><input type="radio" name="tg-c" value="#ef7d22"><span style="--c:#ef7d22"></span></label>
+    <label title="Coral"><input type="radio" name="tg-c" value="#ff6f61"><span style="--c:#ff6f61"></span></label>
+    <label title="Vermelho"><input type="radio" name="tg-c" value="#e03b3b"><span style="--c:#e03b3b"></span></label>
+    <label title="Rosa"><input type="radio" name="tg-c" value="#e05a9b"><span style="--c:#e05a9b"></span></label>
+    <label title="Rosa-claro"><input type="radio" name="tg-c" value="#f29cc4"><span style="--c:#f29cc4"></span></label>
+    <label title="Magenta"><input type="radio" name="tg-c" value="#c43bbf"><span style="--c:#c43bbf"></span></label>
+    <label title="Roxo"><input type="radio" name="tg-c" value="#8a5cd6"><span style="--c:#8a5cd6"></span></label>
+    <label title="Lilás"><input type="radio" name="tg-c" value="#b79cf0"><span style="--c:#b79cf0"></span></label>
+    <label title="Azul"><input type="radio" name="tg-c" value="#3d70c0"><span style="--c:#3d70c0"></span></label>
+    <label title="Azul-claro"><input type="radio" name="tg-c" value="#5fb3f0"><span style="--c:#5fb3f0"></span></label>
+    <label title="Ciano"><input type="radio" name="tg-c" value="#1fb5c9"><span style="--c:#1fb5c9"></span></label>
+    <label title="Verde-água"><input type="radio" name="tg-c" value="#2bb39a"><span style="--c:#2bb39a"></span></label>
+    <label title="Verde"><input type="radio" name="tg-c" value="#2f9e5b"><span style="--c:#2f9e5b"></span></label>
+    <label title="Verde-limão"><input type="radio" name="tg-c" value="#8cc63f"><span style="--c:#8cc63f"></span></label>
+    <label title="Marrom"><input type="radio" name="tg-c" value="#9a6a3f"><span style="--c:#9a6a3f"></span></label>
+    <label title="Cinza"><input type="radio" name="tg-c" value="#8a94a6"><span style="--c:#8a94a6"></span></label>
+    <label title="Preto"><input type="radio" name="tg-c" value="#2b2b2b"><span style="--c:#2b2b2b"></span></label>
+    <label title="Outra cor" class="cust"><input type="radio" name="tg-c" value="#f2b705" id="tg-cust"><span id="tg-custsw" style="--c:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)"></span><input type="color" id="tg-pick" value="#f2b705" aria-label="Escolher outra cor"></label>
+  </div>
+  <span class="dl">Como vai ficar</span>
+  <div id="tg-prev"></div>
+  <div class="err" id="tg-err" role="alert"></div>
+  <div class="dacts"><button class="pill ghost" id="tg-del">Tirar tag</button><span style="flex:1"></span><button class="pill ghost" id="tg-x">Cancelar</button><button class="pill sp" id="tg-ok">Salvar</button></div>
+</dialog>
 <dialog id="pedit">
   <h2>Editar perfil</h2>
   <span class="dl" style="margin-top:0">Banner</span>
@@ -620,6 +667,7 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
   <span class="hint2" id="pe-nickh"></span>
   <span class="dl">Foto de perfil</span>
   <div class="row2"><span id="pe-av"></span><button class="pill ghost sm" id="pe-avbtn">Trocar foto</button></div>
+  <label class="lgcheck pepriv" id="pe-tagrow" hidden><input type="checkbox" id="pe-tag"> <span><b>Mostrar minha tag</b><small id="pe-tagtxt"></small></span></label>
   <label class="lgcheck pepriv"><input type="checkbox" id="pe-priv"> <span><b>Conta privada</b><small>Só quem você aprovar consegue ver e comentar suas publicações.</small></span></label>
   <label class="dl" for="pe-bio">Bio <span id="pe-cnt" style="float:right;font-weight:600;color:var(--mute)">0/150</span></label>
   <textarea id="pe-bio" maxlength="150" placeholder="Conte um pouco sobre você e o que gosta de ler (sem dados pessoais)."></textarea>
@@ -926,7 +974,7 @@ $('#fedit').onclick=async()=>openFolderDlg(await one('folders',openFolderId));
 $('#fdel').onclick=async()=>{const f=await one('folders',openFolderId);const n=(await byIdx('chapters','folder',f.id)).length;
   ask(`Apagar a obra "${f.name}"?`,n?`Os ${n} ${UNITS()} dela também serão apagados deste aparelho.`:'A obra está vazia.',async()=>{for(const c of await byIdx('chapters','folder',f.id))stopJob(c.id);await delFolder(f.id);openFolderId=null;showLib();refreshFolderSelect();toast('Obra apagada.')})};
 let askFn=null;
-function ask(t,m,fn){$('#ck-t').textContent=t;$('#ck-m').textContent=m;askFn=fn;$('#ck').showModal()}
+function ask(t,m,fn,yes){$('#ck-t').textContent=t;$('#ck-m').textContent=m;$('#ck-y').textContent=yes||'Apagar';askFn=fn;$('#ck').showModal()}
 $('#ck-n').onclick=()=>$('#ck').close();
 $('#ck-y').onclick=()=>{$('#ck').close();askFn&&askFn()};
 
@@ -1597,6 +1645,7 @@ function authErr(e){const m=String(e?.message||e||'');
   if(/already registered|already exists/i.test(m))return 'Já existe uma conta com esse e-mail. Tente entrar.';
   if(/Password should be|at least/i.test(m))return 'A senha precisa ter pelo menos 8 caracteres.';
   if(/rate limit|too many/i.test(m))return 'Muitas tentativas agora. Espere alguns minutos e tente de novo.';
+  if(/sending .*email|confirmation email|email.*send/i.test(m))return 'O site não conseguiu enviar o e-mail de confirmação agora. Tente mais tarde ou avise a administração.';
   if(/Email not confirmed/i.test(m))return 'Confirme seu e-mail pelo link que enviamos antes de entrar.';
   if(/invalid.*email|valid email/i.test(m))return 'Esse e-mail não parece válido.';
   if(/Database error saving new user/i.test(m))return 'Esse apelido acabou de ser usado por outra pessoa. Escolha outro.';
@@ -1610,7 +1659,7 @@ async function setUser(u){
   if(u){myNick=u.user_metadata?.nickname||'';
     try{const {data}=await sb.from('profiles').select('nickname').eq('id',u.id).maybeSingle();if(data?.nickname)myNick=data.nickname}catch{}
     try{const {data}=await sb.rpc('is_admin');amAdmin=data===true}catch{}
-    await loadMyAvatar();await loadAdmins()}else{myAvatar=null;adminSet=new Set()}
+    await loadMyAvatar();await loadAdmins();await loadTags()}else{myAvatar=null;adminSet=new Set()}
   renderAccount();if(!$('#recs').hidden){resetRecForm();renderRecs(true)}
   if(u&&u.id!==before)syncNow();
 }
@@ -1624,13 +1673,18 @@ if(sb){
 let adminSet=new Set();
 const VB='<svg class="vbadge" viewBox="0 0 24 24" role="img" aria-label="Verificado"><title>Verificado (adm)</title><circle cx="12" cy="12" r="11"/><path d="M12 5.2l1.9 4 4.4.5-3.3 3 .9 4.4L12 14.9l-3.9 2.2.9-4.4-3.3-3 4.4-.5z"/></svg>';
 const vb=uid=>uid&&adminSet.has(uid)?VB:'';
+let tagMap=new Map();
+async function loadTags(){try{const {data}=await sb.from('tags').select('user_id,label,color,visible');tagMap=new Map((data||[]).map(t=>[t.user_id,t]))}catch{}}
+const tagHtml=(label,color)=>`<span class="admchip tag" style="--tc:${/^#[0-9a-f]{6}$/i.test(color)?color:'#f2b705'}">${esc(label)}</span>`;
+const tagChip=uid=>{const t=uid&&tagMap.get(uid);return t&&t.visible?tagHtml(t.label,t.color):''};
+const chipsFor=uid=>{const h=(adminSet.has(uid)?'<span class="admchip">adm</span>':'')+tagChip(uid);return h?`<span class="chips">${h}</span>`:''};
 async function loadAdmins(){try{const {data}=await sb.rpc('admin_ids');adminSet=new Set((data||[]).map(x=>typeof x==='string'?x:(x.admin_ids||x.id)))}catch{}}
 const ownerOk=()=>{const o=ls.get('ms-owner');return !o||!me||o===me.id};
 function renderAccount(){
   const box=$('#acct');if(!box)return;
   if(!sb){box.innerHTML='<p>A conta não está disponível neste navegador.</p>';return}
   if(!me){box.innerHTML=`<p>Entre na sua conta para participar do mural e ter a mesma biblioteca no celular e no computador.</p><div class="row"><button class="pill sm" data-auth="in">Entrar</button><button class="pill ghost sm" data-auth="up">Criar conta</button></div>`;return}
-  box.innerHTML=`<div class="who"><button class="whoav" id="avbtn" aria-label="Trocar foto de perfil">${avatarHtml(myAvatar,myNick,46)}</button><div><b>@${esc(myNick||'sem apelido')}</b>${amAdmin?VB+'<span class="admchip">adm</span>':''}<small>${esc(me.email||'')}</small></div></div>
+  box.innerHTML=`<div class="who"><button class="whoav" id="avbtn" aria-label="Trocar foto de perfil">${avatarHtml(myAvatar,myNick,46)}</button><div><b>@${esc(myNick||'sem apelido')}</b>${amAdmin?VB:''}${chipsFor(me.id)}<small>${esc(me.email||'')}</small></div></div>
    ${ownerOk()?`<p class="syncline" id="syncline">${esc(syncMsg||'Biblioteca sincronizada com a conta.')}</p>`
      :`<p class="warn">A biblioteca deste aparelho pertence a outra conta, então ela não foi misturada com a sua.</p><button class="pill sm" id="takeover">Trocar pela biblioteca da minha conta</button>`}
    <div class="row" style="margin-top:10px"><button class="pill sm" id="myprof">Ver meu perfil</button>${ownerOk()?'<button class="pill ghost sm" id="syncbtn">Sincronizar agora</button>':''}<button class="pill ghost sm" id="logout">Sair</button></div>`;
@@ -1944,7 +1998,8 @@ async function openProfile(uid,keep){
     $('#pf-tt').textContent='@'+pr.nickname;
     $('#pf-ban').innerHTML=pr.banner&&avUrls.get(pr.banner)?`<img src="${esc(avUrls.get(pr.banner))}" alt="">`:'';
     $('#pf-av').innerHTML=avatarHtml(pr.avatar,pr.nickname,104);
-    $('#pf-name').innerHTML='@'+esc(pr.nickname)+vb(pr.id)+(adminSet.has(pr.id)?'<span class="admchip">adm</span>':'')+(pr.private?'<svg class="lock" viewBox="0 0 24 24" aria-label="Conta privada"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>':'');
+    await loadTags();$('#pf-name').innerHTML='@'+esc(pr.nickname)+vb(pr.id)+(pr.private?'<svg class="lock" viewBox="0 0 24 24" aria-label="Conta privada"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>':'')+chipsFor(pr.id);
+    $('#prof').dataset.uid=pr.id;$('#prof').dataset.nick=pr.nickname;
     $('#pf-bio').textContent=pr.bio||(mine?'Você ainda não escreveu sua bio.':'');$('#pf-bio').classList.toggle('nobio',!pr.bio);
     $('#pf-join').textContent=pr.created_at?'Entrou em '+new Date(pr.created_at).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}):'';
     let fst=null;if(!mine){try{const {data:f}=await sb.from('follows').select('status').eq('follower',me.id).eq('followee',uid).maybeSingle();fst=f?.status||null}catch{}}
@@ -1952,6 +2007,7 @@ async function openProfile(uid,keep){
       :fst==='accepted'?'<button class="pill ghost sm" id="pf-follow" data-st="accepted">Seguindo</button>'
       :fst==='pending'?'<button class="pill ghost sm" id="pf-follow" data-st="pending">Solicitado</button>'
       :`<button class="pill sm" id="pf-follow" data-st="">${pr.private?'Pedir para seguir':'Seguir'}</button>`;
+    if(amAdmin)$('#pf-actions').insertAdjacentHTML('beforeend',' <button class="pill ghost sm" id="pf-tag">Tag</button>');
     try{const {data:fc}=await sb.rpc('follow_counts',{u:uid});const c=Array.isArray(fc)?fc[0]:fc;
       $('#pf-count').innerHTML=c?`<b>${c.followers}</b> ${c.followers===1?'seguidor':'seguidores'} · <b>${c.following}</b> seguindo`:''}catch{$('#pf-count').textContent=''}
     $('#pf-req').innerHTML='';
@@ -1972,6 +2028,7 @@ function closeProfile(){if($('#prof').hidden)return;navPop();$('#prof').hidden=t
 $('#pf-back').onclick=closeProfile;
 $('#pf-list').addEventListener('click',postClick);$('#pf-list').addEventListener('submit',postSubmit);
 $('#prof').addEventListener('click',async e=>{if(e.target.closest('#pf-edit')){openProfEdit();return}
+  if(e.target.closest('#pf-tag')){openTagDlg($('#prof').dataset.uid,$('#prof').dataset.nick);return}
   const pl=e.target.closest('#pf-req [data-prof]');if(pl){openProfile(pl.dataset.prof);return}
   const fb=e.target.closest('#pf-follow');
   if(fb){const st=fb.dataset.st;fb.disabled=true;
@@ -1998,7 +2055,9 @@ function nickHint(){const h=$('#pe-nickh'),inp=$('#pe-nick'),n=inp.value.trim(),
   nickHint.t=setTimeout(async()=>{try{const {data}=await sb.rpc('nickname_available',{n});if($('#pe-nick').value.trim()!==n)return;
     const same=n.toLowerCase()===myNick.toLowerCase();h.textContent=data||same?`Apelido livre! Depois de salvar, a próxima troca só em ${NICK_DAYS} dias.`:'Esse apelido já é de outra pessoa.';h.className='hint2 '+(data||same?'good':'bad')}catch{h.textContent=''}},450)}
 $('#pe-nick').oninput=nickHint;
-function openProfEdit(){banPick=undefined;$('#pe-nick').value=myNick;nickHint();$('#pe-priv').checked=!!$('#prof').dataset.priv;$('#pe-bio').value=$('#prof').dataset.bio||'';bioCount();banPrev();$('#pe-err').textContent='';$('#pe-av').innerHTML=avatarHtml(myAvatar,myNick,72);$('#pedit').showModal()}
+function openProfEdit(){banPick=undefined;$('#pe-nick').value=myNick;nickHint();$('#pe-priv').checked=!!$('#prof').dataset.priv;$('#pe-bio').value=$('#prof').dataset.bio||'';bioCount();banPrev();$('#pe-err').textContent='';$('#pe-av').innerHTML=avatarHtml(myAvatar,myNick,72);
+  {const t=tagMap.get(me.id);$('#pe-tagrow').hidden=!t;if(t){$('#pe-tag').checked=!!t.visible;$('#pe-tagtxt').innerHTML='Aparece embaixo do seu nome: '+tagHtml(t.label,t.color)}}
+  $('#pedit').showModal()}
 function bioCount(){$('#pe-cnt').textContent=`${$('#pe-bio').value.length}/150`}
 $('#pe-bio').oninput=bioCount;
 $('#pe-banbtn').onclick=()=>$('#pe-banf').click();
@@ -2016,9 +2075,30 @@ $('#pe-ok').onclick=async()=>{const b=$('#pe-ok');b.disabled=true;$('#pe-err').t
     if(banPick instanceof Blob){const path=`${me.id}/banner_${Date.now()}.jpg`;const {error}=await sb.storage.from('avatars').upload(path,banPick,{upsert:true,contentType:'image/jpeg'});if(error)throw error;upd.banner=path}
     else if(banPick===null)upd.banner=null;
     const {error}=await sb.from('profiles').update(upd).eq('id',me.id);if(error)throw error;
+    {const t=tagMap.get(me.id);if(t&&t.visible!==$('#pe-tag').checked){const {error:e2}=await sb.from('tags').update({visible:$('#pe-tag').checked}).eq('user_id',me.id);if(e2)throw e2;t.visible=$('#pe-tag').checked;renderAccount()}}
     if('banner' in upd&&old&&old!==upd.banner)sb.storage.from('avatars').remove([old]).catch(()=>{});
     myPrivate=upd.private;if(nickChange){myNick=nn;renderAccount();mural=[]}
     $('#pedit').close();toast(nickChange?`Pronto! Agora você é @${nn}.`:'Perfil atualizado!');openProfile(me.id,true)}catch(err){$('#pe-err').textContent=cloudErr(err)}finally{b.disabled=false}};
+/* ---------- tags personalizadas (só a adm dá ou tira) ---------- */
+let tagFor=null;
+const tgColor=()=>(document.querySelector('input[name=tg-c]:checked')||{}).value||'#f2b705';
+const tgPrev=()=>{const l=$('#tg-label').value.trim();$('#tg-prev').innerHTML=l?tagHtml(l,tgColor()):'<small class="hint2">Escreva o texto da tag.</small>'};
+function openTagDlg(uid,nick){if(!amAdmin||!uid)return;tagFor=uid;const t=tagMap.get(uid);
+  $('#tg-who').textContent='Para @'+nick+(t&&!t.visible?' (no momento a pessoa escondeu a tag)':'');
+  $('#tg-label').value=t?t.label:'';const c=t?t.color:'#f2b705';
+  let r=document.querySelector(`#tg-sw input[name=tg-c][value="${c}"]:not(#tg-cust)`);if(!r){r=$('#tg-cust');setCust(c)}else{$('#tg-custsw').style.setProperty('--c','conic-gradient(red,yellow,lime,cyan,blue,magenta,red)')}r.checked=true;
+  $('#tg-del').hidden=!t;$('#tg-err').textContent='';tgPrev();$('#tagdlg').showModal()}
+function setCust(c){$('#tg-cust').value=c;$('#tg-pick').value=c;$('#tg-custsw').style.setProperty('--c',c)}
+$('#tg-pick').addEventListener('input',e=>{setCust(e.target.value);$('#tg-cust').checked=true;tgPrev()});
+$('#tg-label').addEventListener('input',tgPrev);$('#tg-sw').addEventListener('change',tgPrev);
+$('#tg-x').onclick=()=>$('#tagdlg').close();
+$('#tg-ok').onclick=async()=>{const l=$('#tg-label').value.trim();if(!l){$('#tg-err').textContent='Escreva o texto da tag.';return}
+  const b=$('#tg-ok');b.disabled=true;$('#tg-err').textContent='';
+  try{const ex=tagMap.get(tagFor);const row={label:l.slice(0,20),color:tgColor()};
+    const {error}=ex?await sb.from('tags').update(row).eq('user_id',tagFor):await sb.from('tags').insert({user_id:tagFor,...row,visible:true});if(error)throw error;
+    $('#tagdlg').close();toast('Tag salva!');if(tagFor===me.id)renderAccount();openProfile(tagFor,true)}catch(err){$('#tg-err').textContent=cloudErr(err)}finally{b.disabled=false}};
+$('#tg-del').onclick=()=>ask('Tirar a tag desta conta?','Ela deixa de aparecer no perfil. Você pode dar de novo quando quiser.',async()=>{
+  try{const {error}=await sb.from('tags').delete().eq('user_id',tagFor);if(error)throw error;tagMap.delete(tagFor);$('#tagdlg').close();toast('Tag retirada.');if(tagFor===me.id)renderAccount();openProfile(tagFor,true)}catch(err){$('#tg-err').textContent=cloudErr(err)}},'Tirar');
 /* ---------- aparência: claro / escuro ---------- */
 function applyTheme(t){const d=t==='dark';document.documentElement.classList.toggle('dark',d);
   $$('.theme').forEach(b=>b.setAttribute('aria-pressed',b.dataset.theme===(d?'dark':'light')));
