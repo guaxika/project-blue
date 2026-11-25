@@ -455,7 +455,7 @@ body.book .rcom li{background:#f6f2fd}
         <label class="lfld" for="up-email"><span class="lic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="sr">e-mail (ninguém vê)</span><input id="up-email" type="email" placeholder="e-mail (ninguém vê)" autocomplete="email" required></label>
         <label class="lfld" for="up-pass"><span class="lic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span class="sr">senha (mínimo 8)</span><input id="up-pass" type="password" placeholder="senha (mínimo 8)" minlength="8" autocomplete="new-password" required></label>
         <label class="lfld" for="up-pass2"><span class="lic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span class="sr">repita a senha</span><input id="up-pass2" type="password" placeholder="repita a senha" minlength="8" autocomplete="new-password" required></label>
-        <details class="lgrules"><summary>regras do mural</summary><ul><li>Seja gentil com todo mundo.</li><li>Não poste dados pessoais: nome completo, escola, endereço, telefone ou fotos.</li><li>Indique onde ler oficialmente; nada de links de sites piratas.</li><li>Viu algo estranho? Use "denunciar".</li></ul></details>
+        <details class="lgrules"><summary>regras do mural</summary><ul><li>Seja gentil com todo mundo.</li><li>Não poste dados pessoais: nome completo, escola, endereço, telefone ou fotos.</li><li>Viu algo estranho? Use "denunciar".</li></ul></details>
         <label class="lgcheck"><input type="checkbox" id="up-rules"> li e aceito as regras do mural</label>
         <div class="lgbtns"><button type="button" class="lgbtn" data-cancel>cancelar</button><button class="lgbtn" id="up-go">criar conta</button></div>
       </form>
@@ -1395,7 +1395,7 @@ $('#rc-list').addEventListener('click',async e=>{
   if(e.target.closest('[data-rdel]')){ask(`Apagar a indicação de "${r.title}"?`,'Os comentários dela também serão apagados.',async()=>{
       if(m){const {error}=await sb.from('recs').delete().eq('id',r.id);if(error){toast(cloudErr(error),true);return}await renderRecs(true)}
       else{recs=recs.filter(x=>x!==raw);saveRecs();renderRecs()}toast('Indicação apagada.')});return}
-  if(e.target.closest('[data-rrep]')){ask(`Denunciar a indicação de "${r.title}"?`,'Use para coisas ofensivas, dados pessoais, spam ou links piratas. Com 3 denúncias ela some até a administradora olhar.',()=>report('rec',r.id));return}
+  if(e.target.closest('[data-rrep]')){ask(`Denunciar a indicação de "${r.title}"?`,'Use para coisas ofensivas, dados pessoais ou spam. Com 3 denúncias ela some até a administradora olhar.',()=>report('rec',r.id));return}
   const cr=e.target.closest('[data-crep]');if(cr){ask('Denunciar este comentário?','Com 3 denúncias ele some até a administradora olhar.',()=>report('comment',cr.dataset.crep));return}
   const cd=e.target.closest('[data-cdel]');if(cd){
     if(m){const {error}=await sb.from('rec_comments').delete().eq('id',cd.dataset.cdel);if(error){toast(cloudErr(error),true);return}renderRecs(true)}
