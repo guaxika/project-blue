@@ -257,6 +257,13 @@ button.plink:hover .pwho b,.plink.nm:hover{text-decoration:underline}
 .peban{height:110px;border-radius:16px;overflow:hidden;background:linear-gradient(120deg,#b7cbe6,#dde7f3 55%,#fff);margin-bottom:10px}
 .peban img{width:100%;height:100%;object-fit:cover;display:block}
 .row2{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+/* selo verificado (adm) */
+.vbadge{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.15em;margin-left:4px;flex:none}
+.vbadge circle{fill:#3d70c0}.vbadge path{fill:#fff}
+html.dark .vbadge circle{fill:#8fb4ee}html.dark .vbadge path{fill:#0b0f14}
+.admchip{display:block;width:fit-content;margin:4px 0 2px;padding:1px 10px;border-radius:999px;border:1.5px solid #3d70c0;background:rgba(61,112,192,.22);color:#1d3d73;font:800 11px/1.5 Nunito,sans-serif;letter-spacing:.06em;text-transform:lowercase}
+html.dark .admchip{border-color:#5b8ad6;background:rgba(61,112,192,.32);color:#dbe7ff}
+#pf-name .admchip{font-size:12px;margin-top:6px}
 /* seguidores */
 .pcount{margin:8px 0 0;font-size:14px;color:var(--mute)}.pcount b{color:var(--ink)}
 .lock{display:inline-block;width:18px;height:18px;vertical-align:-2px;margin-left:6px;color:var(--mute)}
@@ -1388,7 +1395,7 @@ async function setUser(u){
   if(u){myNick=u.user_metadata?.nickname||'';
     try{const {data}=await sb.from('profiles').select('nickname').eq('id',u.id).maybeSingle();if(data?.nickname)myNick=data.nickname}catch{}
     try{const {data}=await sb.rpc('is_admin');amAdmin=data===true}catch{}
-    await loadMyAvatar()}else myAvatar=null;
+    await loadMyAvatar();await loadAdmins()}else{myAvatar=null;adminSet=new Set()}
   renderAccount();if(!$('#recs').hidden){resetRecForm();renderRecs(true)}
   if(u&&u.id!==before)syncNow();
 }
@@ -1399,12 +1406,16 @@ if(sb){
   });
   sb.auth.getSession().then(({data})=>{const u=data?.session?.user||null;if((u?.id||null)!==(me?.id||null))setUser(u)}).catch(()=>{});
 }
+let adminSet=new Set();
+const VB='<svg class="vbadge" viewBox="0 0 24 24" role="img" aria-label="Verificado"><title>Verificado (adm)</title><circle cx="12" cy="12" r="11"/><path d="M12 5.2l1.9 4 4.4.5-3.3 3 .9 4.4L12 14.9l-3.9 2.2.9-4.4-3.3-3 4.4-.5z"/></svg>';
+const vb=uid=>uid&&adminSet.has(uid)?VB:'';
+async function loadAdmins(){try{const {data}=await sb.rpc('admin_ids');adminSet=new Set((data||[]).map(x=>typeof x==='string'?x:(x.admin_ids||x.id)))}catch{}}
 const ownerOk=()=>{const o=ls.get('ms-owner');return !o||!me||o===me.id};
 function renderAccount(){
   const box=$('#acct');if(!box)return;
   if(!sb){box.innerHTML='<p>A conta não está disponível neste navegador.</p>';return}
   if(!me){box.innerHTML=`<p>Entre na sua conta para participar do mural e ter a mesma biblioteca no celular e no computador.</p><div class="row"><button class="pill sm" data-auth="in">Entrar</button><button class="pill ghost sm" data-auth="up">Criar conta</button></div>`;return}
-  box.innerHTML=`<div class="who"><button class="whoav" id="avbtn" aria-label="Trocar foto de perfil">${avatarHtml(myAvatar,myNick,46)}</button><div><b>@${esc(myNick||'sem apelido')}</b>${amAdmin?' <span class="chip">administradora</span>':''}<small>${esc(me.email||'')}</small></div></div>
+  box.innerHTML=`<div class="who"><button class="whoav" id="avbtn" aria-label="Trocar foto de perfil">${avatarHtml(myAvatar,myNick,46)}</button><div><b>@${esc(myNick||'sem apelido')}</b>${amAdmin?VB+'<span class="admchip">adm</span>':''}<small>${esc(me.email||'')}</small></div></div>
    ${ownerOk()?`<p class="syncline" id="syncline">${esc(syncMsg||'Biblioteca sincronizada com a conta.')}</p>`
      :`<p class="warn">A biblioteca deste aparelho pertence a outra conta, então ela não foi misturada com a sua.</p><button class="pill sm" id="takeover">Trocar pela biblioteca da minha conta</button>`}
    <div class="row" style="margin-top:10px"><button class="pill sm" id="myprof">Ver meu perfil</button>${ownerOk()?'<button class="pill ghost sm" id="syncbtn">Sincronizar agora</button>':''}<button class="pill ghost sm" id="logout">Sair</button></div>`;
@@ -1640,15 +1651,15 @@ async function enrichPosts(data){const ids=data.map(r=>r.id);let coms=[];
     if(imgs.length){try{const {data:su}=await sb.storage.from('posts').createSignedUrls(imgs,3600);(su||[]).forEach(d=>{if(d.signedUrl)postUrls.set(d.path,d.signedUrl)})}catch{}}
 }
 const norm2=(r,mm=recTab==='mural')=>mm?{id:r.id,uid:r.user_id,title:r.title,kind:r.kind,stars:r.stars,text:r.body,where:r.where_read,date:r.created_at,edited:r.edited_at,by:r.nickname,av:r.avatar,image:r.image,spoiler:r.spoiler,mine:me&&r.user_id===me.id,comments:(r.comments||[]).map(c=>({id:c.id,text:c.body,date:c.created_at,by:c.nickname,av:c.avatar,uid:c.user_id,mine:me&&c.user_id===me.id}))}
-  :{...r,by:myNick||'',av:myAvatar,mine:true,comments:(r.comments||[]).map((c,k)=>({id:k,text:c.text,date:c.date,by:myNick||'',av:myAvatar,mine:true}))};
+  :{...r,by:myNick||'',av:myAvatar,uid:me?.id,mine:true,comments:(r.comments||[]).map((c,k)=>({id:k,text:c.text,date:c.date,by:myNick||'',av:myAvatar,uid:me?.id,mine:true}))};
 const I_COM='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',I_SH='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0-4 4m4-4 4 4M5 13v7h14v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',I_ED='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',I_FL='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4h11l-1 4 4 1v8H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
 function postCard(r,m){const url=r.image?postUrls.get(r.image):null;return `<article class="card rcard post" data-r="${esc(r.id)}">
-    <div class="phead">${m&&r.uid?`<button class="plink" data-prof="${esc(r.uid)}" aria-label="Ver perfil de @${esc(r.by)}">`:'<span class="plink">'}${avatarHtml(r.av,r.by||'eu',44)}<span class="pwho"><b>${r.by?'@'+esc(r.by):'Você'}</b><span>${fmtDate(r.date)}${r.edited?' · editada':''}</span></span>${m&&r.uid?'</button>':'</span>'}<span class="chip">${esc(r.kind)}</span></div>
+    <div class="phead">${m&&r.uid?`<button class="plink" data-prof="${esc(r.uid)}" aria-label="Ver perfil de @${esc(r.by)}">`:'<span class="plink">'}${avatarHtml(r.av,r.by||'eu',44)}<span class="pwho"><b>${r.by?'@'+esc(r.by):'Você'}${vb(r.uid)}</b><span>${fmtDate(r.date)}${r.edited?' · editada':''}</span></span>${m&&r.uid?'</button>':'</span>'}<span class="chip">${esc(r.kind)}</span></div>
     <div class="pbody"><h3>${esc(r.title)}</h3>${r.stars?starsHtml(r.stars):''}
       <p class="rtext">${esc(r.text)}</p>${whereHtml(r.where)}
       ${url?`<div class="pimg${r.spoiler&&!revealed.has(r.id)?' spo':''}"><img src="${esc(url)}" alt="Imagem da publicação" loading="lazy" data-zoom>${r.spoiler&&!revealed.has(r.id)?'<button type="button" class="reveal" data-reveal>Mostrar spoiler<small>a imagem pode contar o que acontece</small></button>':''}</div>`:''}</div>
-    <div class="pacts"><button class="act" data-focuscom>${I_COM}${r.comments.length||''} Comentar</button><button class="act" data-share>${I_SH}Compartilhar</button>${r.mine?`<button class="act" data-edit>${I_ED}Editar</button>`:''}<span class="spacer"></span>${m&&!r.mine?`<button class="act" data-rrep title="Denunciar">${I_FL}Denunciar</button>`:''}${r.mine||(m&&amAdmin)?`<button class="act del" data-rdel aria-label="Apagar publicação" title="${r.mine?'Apagar':'Apagar (administradora)'}">${ICON_TRASH}</button>`:''}</div>
-    <div class="rcom"><ul>${r.comments.map(c=>`<li>${m&&c.uid?`<button class="plink" data-prof="${esc(c.uid)}" aria-label="Ver perfil de @${esc(c.by)}">${avatarHtml(c.av,c.by,28)}</button>`:avatarHtml(c.av,c.by||'eu',28)}<div class="cbody">${m&&c.uid?`<button class="plink nm" data-prof="${esc(c.uid)}">@${esc(c.by)}</button>`:`<b>${c.by?'@'+esc(c.by):'Você'}</b>`} ${esc(c.text)}<small>${fmtDate(c.date)}${c.mine||(m&&amAdmin)?` · <button class="linkbtn" data-cdel="${esc(c.id)}">apagar</button>`:''}${m&&!c.mine?` · <button class="linkbtn" data-crep="${esc(c.id)}">denunciar</button>`:''}</small></div></li>`).join('')}</ul>
+    <div class="pacts"><button class="act" data-focuscom>${I_COM}${r.comments.length||''} Comentar</button><button class="act" data-share>${I_SH}Compartilhar</button>${r.mine?`<button class="act" data-edit>${I_ED}Editar</button>`:''}<span class="spacer"></span>${m&&!r.mine?`<button class="act" data-rrep title="Denunciar">${I_FL}Denunciar</button>`:''}${r.mine||(m&&amAdmin)?`<button class="act del" data-rdel aria-label="Apagar publicação" title="${r.mine?'Apagar':'Apagar (adm)'}">${ICON_TRASH}</button>`:''}</div>
+    <div class="rcom"><ul>${r.comments.map(c=>`<li>${m&&c.uid?`<button class="plink" data-prof="${esc(c.uid)}" aria-label="Ver perfil de @${esc(c.by)}">${avatarHtml(c.av,c.by,28)}</button>`:avatarHtml(c.av,c.by||'eu',28)}<div class="cbody">${m&&c.uid?`<button class="plink nm" data-prof="${esc(c.uid)}">@${esc(c.by)}</button>${vb(c.uid)}`:`<b>${c.by?'@'+esc(c.by):'Você'}</b>${vb(c.uid)}`} ${esc(c.text)}<small>${fmtDate(c.date)}${c.mine||(m&&amAdmin)?` · <button class="linkbtn" data-cdel="${esc(c.id)}">apagar</button>`:''}${m&&!c.mine?` · <button class="linkbtn" data-crep="${esc(c.id)}">denunciar</button>`:''}</small></div></li>`).join('')}</ul>
       <form data-cform><input maxlength="500" placeholder="Escreva um comentário…" aria-label="Comentário sobre ${esc(r.title)}"><button class="pill sm">Comentar</button></form></div>
   </article>`}
 async function renderRecs(reload){
@@ -1693,8 +1704,8 @@ async function postClick(e){const {pf,m,refresh}=ctxOf(e);
   if(e.target.closest('[data-rdel]')){ask(`Apagar a indicação de "${r.title}"?`,'Os comentários dela também serão apagados.',async()=>{
       if(m){const {error}=await sb.from('recs').delete().eq('id',r.id);if(error){toast(cloudErr(error),true);return}if(r.image)sb.storage.from('posts').remove([r.image]).catch(()=>{});await refresh()}
       else{recs=recs.filter(x=>x!==raw);saveRecs();renderRecs()}toast('Indicação apagada.')});return}
-  if(e.target.closest('[data-rrep]')){ask(`Denunciar a indicação de "${r.title}"?`,'Use para coisas ofensivas, dados pessoais ou spam. Com 3 denúncias ela some até a administradora olhar.',()=>report('rec',r.id));return}
-  const cr=e.target.closest('[data-crep]');if(cr){ask('Denunciar este comentário?','Com 3 denúncias ele some até a administradora olhar.',()=>report('comment',cr.dataset.crep));return}
+  if(e.target.closest('[data-rrep]')){ask(`Denunciar a indicação de "${r.title}"?`,'Use para coisas ofensivas, dados pessoais ou spam. Com 3 denúncias ela some até a adm olhar.',()=>report('rec',r.id));return}
+  const cr=e.target.closest('[data-crep]');if(cr){ask('Denunciar este comentário?','Com 3 denúncias ele some até a adm olhar.',()=>report('comment',cr.dataset.crep));return}
   const cd=e.target.closest('[data-cdel]');if(cd){
     if(m){const {error}=await sb.from('rec_comments').delete().eq('id',cd.dataset.cdel);if(error){toast(cloudErr(error),true);return}refresh()}
     else{raw.comments.splice(+cd.dataset.cdel,1);saveRecs();renderRecs()}return}
@@ -1718,7 +1729,7 @@ async function openProfile(uid,keep){
     $('#pf-tt').textContent='@'+pr.nickname;
     $('#pf-ban').innerHTML=pr.banner&&avUrls.get(pr.banner)?`<img src="${esc(avUrls.get(pr.banner))}" alt="">`:'';
     $('#pf-av').innerHTML=avatarHtml(pr.avatar,pr.nickname,104);
-    $('#pf-name').innerHTML='@'+esc(pr.nickname)+(pr.private?'<svg class="lock" viewBox="0 0 24 24" aria-label="Conta privada"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>':'');
+    $('#pf-name').innerHTML='@'+esc(pr.nickname)+vb(pr.id)+(adminSet.has(pr.id)?'<span class="admchip">adm</span>':'')+(pr.private?'<svg class="lock" viewBox="0 0 24 24" aria-label="Conta privada"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>':'');
     $('#pf-bio').textContent=pr.bio||(mine?'Você ainda não escreveu sua bio.':'');$('#pf-bio').classList.toggle('nobio',!pr.bio);
     $('#pf-join').textContent=pr.created_at?'Entrou em '+new Date(pr.created_at).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}):'';
     let fst=null;if(!mine){try{const {data:f}=await sb.from('follows').select('status').eq('follower',me.id).eq('followee',uid).maybeSingle();fst=f?.status||null}catch{}}
@@ -1731,7 +1742,7 @@ async function openProfile(uid,keep){
     $('#pf-req').innerHTML='';
     if(mine){try{const {data:rq}=await sb.from('follows').select('follower,created_at').eq('followee',me.id).eq('status','pending');
       if(rq&&rq.length){const {data:ps}=await sb.from('profiles').select('id,nickname,avatar').in('id',rq.map(x=>x.follower));await resolveAvatars((ps||[]).map(x=>x.avatar));
-        $('#pf-req').innerHTML=`<div class="card reqs"><h3>Pedidos para seguir (${rq.length})</h3><ul>${(ps||[]).map(x=>`<li><button class="plink" data-prof="${esc(x.id)}">${avatarHtml(x.avatar,x.nickname,36)}</button><span class="nm"><b>@${esc(x.nickname)}</b></span><button class="pill sm" data-acc="${esc(x.id)}">Aceitar</button><button class="pill ghost sm" data-rej="${esc(x.id)}">Recusar</button></li>`).join('')}</ul></div>`}}catch{}}
+        $('#pf-req').innerHTML=`<div class="card reqs"><h3>Pedidos para seguir (${rq.length})</h3><ul>${(ps||[]).map(x=>`<li><button class="plink" data-prof="${esc(x.id)}">${avatarHtml(x.avatar,x.nickname,36)}</button><span class="nm"><b>@${esc(x.nickname)}</b>${vb(x.id)}</span><button class="pill sm" data-acc="${esc(x.id)}">Aceitar</button><button class="pill ghost sm" data-rej="${esc(x.id)}">Recusar</button></li>`).join('')}</ul></div>`}}catch{}}
     $('#prof').dataset.priv=pr.private?'1':'';
     if(pr.private&&!mine&&fst!=='accepted'&&!amAdmin){profPosts=[];$('#pf-n').textContent='Conta privada';
       $('#pf-list').innerHTML=`<div class="card empty privnote"><h3>Esta conta é privada</h3><p>${fst==='pending'?'Seu pedido foi enviado. Quando @'+esc(pr.nickname)+' aceitar, as publicações aparecem aqui.':'Toque em "Pedir para seguir". Quando @'+esc(pr.nickname)+' aceitar, você vê e comenta as publicações.'}</p></div>`;return}
