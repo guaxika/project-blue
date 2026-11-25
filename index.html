@@ -127,7 +127,7 @@ main{max-width:1140px;margin:0 auto;padding:18px max(4vw,16px) 90px}
 .page{position:relative;background:#fff;border-radius:6px;overflow:hidden}
 .page img{display:block;width:100%;height:auto}
 .ov{position:absolute;inset:0;pointer-events:none}
-.bx{position:absolute;pointer-events:auto;display:flex;align-items:center;justify-content:center;text-align:center;background:#fff;color:#111;border-radius:40%/36%;font:700 16px/1.1 "Comic Neue","Comic Sans MS",cursive;padding:2px 3px;overflow:hidden;cursor:pointer;text-transform:uppercase}
+.bx{position:absolute;pointer-events:auto;display:flex;align-items:center;justify-content:center;text-align:center;background:#fff;color:#111;border-radius:40%/36%;font:700 16px/1.1 "Comic Neue","Comic Sans MS",Nunito,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;padding:2px 3px;overflow:hidden;cursor:pointer;text-transform:uppercase}
 .hideov .ov{display:none}
 .pbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:8px 4px 16px;font-size:13px;color:var(--mute)}
 .st{display:inline-flex;align-items:center;gap:6px}
@@ -264,6 +264,10 @@ html.dark .vbadge circle{fill:#8fb4ee}html.dark .vbadge path{fill:#0b0f14}
 .admchip{display:block;width:fit-content;margin:4px 0 2px;padding:1px 10px;border-radius:999px;border:1.5px solid #3d70c0;background:rgba(61,112,192,.22);color:#1d3d73;font:800 11px/1.5 Nunito,sans-serif;letter-spacing:.06em;text-transform:lowercase}
 html.dark .admchip{border-color:#5b8ad6;background:rgba(61,112,192,.32);color:#dbe7ff}
 #pf-name .admchip{font-size:12px;margin-top:6px}
+.ov canvas.patch{position:absolute;pointer-events:none;display:block}
+.bx.clean{background:transparent!important;box-shadow:none!important;border-radius:0;line-height:1.22;letter-spacing:.02em;overflow:visible;paint-order:stroke fill;-webkit-text-stroke:var(--sw,0) var(--sc,transparent)}
+.bx.clean.free{transform:translate(-50%,-50%);width:max-content!important;max-width:92%;height:auto!important;display:block;padding:0}
+.bx.clean.orig{color:transparent!important;text-shadow:none!important}
 /* seguidores */
 .pcount{margin:8px 0 0;font-size:14px;color:var(--mute)}.pcount b{color:var(--ink)}
 .lock{display:inline-block;width:18px;height:18px;vertical-align:-2px;margin-left:6px;color:var(--mute)}
@@ -562,7 +566,7 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
     <button class="pill sm" id="rd-dl">Baixar PDF</button>
   </div>
   <div class="rwrap">
-    <div class="opts" id="opts-hq"><label><input type="checkbox" id="o-ov"> Tradução nos balões</label><label><input type="checkbox" id="o-list"> Texto embaixo da página</label></div>
+    <div class="opts" id="opts-hq"><label><input type="checkbox" id="o-ov"> Tradução nos balões</label><label><input type="checkbox" id="o-list"> Texto embaixo da página</label><label><input type="radio" name="o-sty" value="clean"> Manter a arte (apaga só o texto)</label><label><input type="radio" name="o-sty" value="white"> Quadro branco</label></div>
     <div class="opts" id="opts-tx" hidden><label><input type="checkbox" id="o-orig"> Mostrar o original junto</label></div>
     <button class="pill" id="resume" hidden></button>
     <div id="pages"></div>
@@ -690,7 +694,7 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
 <dialog id="fdlg">
   <h2 id="fd-h">Nova obra</h2>
   <label class="dl" for="fd-name">Nome da obra</label>
-  <input class="inp" id="fd-name" placeholder="ex.: Spy x Family" maxlength="80">
+  <input class="inp" id="fd-name" placeholder="ex.: Wakfu" maxlength="80">
   <span class="dl">Imagem de capa (obrigatória)</span>
   <div class="cover"><div class="cprev" id="fd-prev"><span>Sem capa</span></div>
     <div><button class="pill" id="fd-pickc">Escolher imagem</button><p style="font-size:13px;margin-top:8px">Do computador ou da galeria do celular.</p></div></div>
@@ -1032,14 +1036,29 @@ function paint(p){
   const it=p.items||[];
   ov.innerHTML=it.map((t,k)=>`<div class="bx" data-k="${p.i}:${k}" title="${esc(t.o)}" style="left:${t.x}%;top:${t.y}%;width:${t.w}%;height:${t.h}%">${esc(t.t||'…')}</div>`).join('');
   lst.innerHTML=it.length?`<ol>${it.map(t=>`<li>${esc(t.t)}<small>${esc(t.o)}</small></li>`).join('')}</ol>`:`<small>${p.state==='ok'?'Nenhum texto encontrado nesta página.':'Ainda não traduzida.'}</small>`;
-  requestAnimationFrame(()=>fit(ov));readerBtns();
+  requestAnimationFrame(()=>fit(ov));readerBtns();decorate(p,ov);
 }
-function fit(ov){for(const el of ov.querySelectorAll('.bx')){const H=el.clientHeight,W=el.clientWidth;if(!H||!W)continue;
+function fit(ov){const nw=+ov.dataset.nw||0,sc=nw?ov.clientWidth/nw:0;
+  for(const el of ov.querySelectorAll('.bx')){
+  if(el.dataset.fsn&&sc){let s=+el.dataset.fsn*sc;el.style.fontSize=s+'px';
+    if(!el.classList.contains('free')){const H=el.clientHeight,W=el.clientWidth;while(s>7&&(el.scrollHeight>H+1||el.scrollWidth>W+1)){s-=0.5;el.style.fontSize=s+'px'}}
+    else{const tw=(+el.dataset.tw||0)*sc,th=(+el.dataset.th||0)*sc;el.style.maxWidth=Math.max(tw*1.2,ov.clientWidth*0.35)+'px';
+      while(s>7&&th&&el.offsetHeight>Math.max(th*1.5,s*1.3*2)){s-=0.5;el.style.fontSize=s+'px'}}
+    continue}
+  const H=el.clientHeight,W=el.clientWidth;if(!H||!W)continue;
   let s=Math.min(24,Math.max(9,Math.sqrt(W*H/Math.max(6,el.textContent.length))*0.92));el.style.fontSize=s+'px';
-  while(s>7&&(el.scrollHeight>H+1||el.scrollWidth>W+1)){s-=0.5;el.style.fontSize=s+'px'}}}
+  while(s>7&&(el.scrollHeight>H+1||el.scrollWidth>W+1)){s-=0.5;el.style.fontSize=s+'px'}}
+  // se dois textos soltos se encostam, diminui o maior até separar
+  const fr=[...ov.querySelectorAll('.bx.clean.free')];
+  for(let it=0;it<40;it++){let hit=false;
+    for(let i=0;i<fr.length;i++)for(let j=i+1;j<fr.length;j++){const a=fr[i].getBoundingClientRect(),b=fr[j].getBoundingClientRect();
+      if(a.left<b.right-1&&b.left<a.right-1&&a.top<b.bottom-1&&b.top<a.bottom-1){const big=a.height*a.width>b.height*b.width?fr[i]:fr[j];
+        const fs=parseFloat(big.style.fontSize)||14;if(fs>7){big.style.fontSize=(fs-0.5)+'px';hit=true}}}
+    if(!hit)break}}
 new ResizeObserver(()=>$$('.ov').forEach(fit)).observe($('#pages'));
-const opt=Object.assign({ov:true,list:false,orig:false},ls.get('ms-opt')||{});
-function applyOpt(){$('#o-ov').checked=opt.ov;$('#o-list').checked=opt.list;$('#o-orig').checked=opt.orig;document.body.classList.toggle('hideov',!opt.ov);document.body.classList.toggle('listmode',opt.list);document.body.classList.toggle('origmode',opt.orig)}
+const opt=Object.assign({ov:true,list:false,orig:false,style:'clean'},ls.get('ms-opt')||{});
+function applyOpt(){$$('[name=o-sty]').forEach(r=>r.checked=r.value===opt.style);$('#o-ov').checked=opt.ov;$('#o-list').checked=opt.list;$('#o-orig').checked=opt.orig;document.body.classList.toggle('hideov',!opt.ov);document.body.classList.toggle('listmode',opt.list);document.body.classList.toggle('origmode',opt.orig)}
+$$('[name=o-sty]').forEach(r=>r.onchange=()=>{opt.style=r.value;ls.set('ms-opt',opt);applyOpt();if(reader.ps)reader.ps.forEach(paint)});
 $('#o-orig').onchange=e=>{opt.orig=e.target.checked;ls.set('ms-opt',opt);applyOpt()};
 $('#o-ov').onchange=e=>{opt.ov=e.target.checked;ls.set('ms-opt',opt);applyOpt()};
 $('#o-list').onchange=e=>{opt.list=e.target.checked;ls.set('ms-opt',opt);applyOpt()};applyOpt();
@@ -1063,7 +1082,7 @@ async function downloadPdf(id,btn){
     const {jsPDF}=window.jspdf;let doc=null;
     for(const p of ps){btn.textContent=`Gerando ${p.i+1}/${ps.length}`;
       const bm=await createImageBitmap(p.blob);const W=bm.width,H=bm.height,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-      x.drawImage(bm,0,0);for(const t of p.items||[])drawBalloon(x,t,W,H);
+      x.drawImage(bm,0,0);for(const t of p.items||[])drawBalloon(x,t,W,H,bm);
       const data=c.toDataURL('image/jpeg',0.85),o=W>H?'l':'p';
       if(!doc)doc=new jsPDF({orientation:o,unit:'px',format:[W,H],hotfixes:['px_scaling'],compress:true});else doc.addPage([W,H],o);
       doc.addImage(data,'JPEG',0,0,W,H,undefined,'FAST');await new Promise(r=>setTimeout(r));}
@@ -1074,15 +1093,21 @@ async function downloadPdf(id,btn){
   }catch(e){console.warn(e);toast('Não consegui gerar o PDF.',true)}
   btn.textContent=old;btn.disabled=false;
 }
-function drawBalloon(x,t,W,H){
+function drawBalloon(x,t,W,H,src){
   const bx=t.x/100*W,by=t.y/100*H,bw=t.w/100*W,bh=t.h/100*H,r=Math.min(bw,bh)*0.38;
-  x.fillStyle='#fff';x.beginPath();x.roundRect?x.roundRect(bx,by,bw,bh,r):x.rect(bx,by,bw,bh);x.fill();
-  const txt=String(t.t||'').toUpperCase();let s=Math.min(bh*0.5,W*0.05),lines=[];
-  const wrap=sz=>{x.font=`700 ${sz}px "Comic Neue", "Comic Sans MS", sans-serif`;const out=[];let line='';
-    for(const w of txt.split(/\s+/)){const tt=line?line+' '+w:w;if(x.measureText(tt).width>bw*0.92&&line){out.push(line);line=w}else line=tt}if(line)out.push(line);return out};
-  while(s>6){lines=wrap(s);const wide=Math.max(...lines.map(l=>x.measureText(l).width));if(lines.length*s*1.12<=bh*0.95&&wide<=bw*0.96)break;s-=1}
-  x.fillStyle='#111';x.textAlign='center';x.textBaseline='middle';
-  const y0=by+bh/2-(lines.length-1)*s*1.12/2;lines.forEach((l,i)=>x.fillText(l,bx+bw/2,y0+i*s*1.12));
+  const pt=opt.style!=='white'&&src?makePatch(src,W,H,t):null;
+  if(pt)x.drawImage(pt.cv,pt.X,pt.Y);else{x.fillStyle='#fff';x.beginPath();x.roundRect?x.roundRect(bx,by,bw,bh,r):x.rect(bx,by,bw,bh);x.fill();}
+  const txt=pt&&!pt.caps?String(t.t||''):String(t.t||'').toUpperCase();let s=pt?pt.fs:Math.min(bh*0.5,W*0.05),lines=[];
+  const maxW=pt&&!t.bl?W*0.9:bw*0.92;
+  const wrap=sz=>{x.font=`700 ${sz}px "Comic Neue", "Comic Sans MS", Nunito, Arial, sans-serif`;const out=[];let line='';
+    for(const w of txt.split(/\s+/)){const tt=line?line+' '+w:w;if(x.measureText(tt).width>maxW&&line){out.push(line);line=w}else line=tt}if(line)out.push(line);return out};
+  if(pt&&!t.bl)lines=wrap(s);
+  else while(s>6){lines=wrap(s);const wide=Math.max(...lines.map(l=>x.measureText(l).width));if(lines.length*s*1.22<=bh*0.95&&wide<=bw*0.96)break;s-=1}
+  x.textAlign='center';x.textBaseline='middle';
+  let cxp=bx+bw/2,cyp=by+bh/2;if(pt&&!t.bl){const half=Math.max(...lines.map(l=>x.measureText(l).width))/2;cxp=Math.min(W-half-8,Math.max(half+8,pt.cx));cyp=pt.cy}
+  const y0=cyp-(lines.length-1)*s*1.22/2;
+  if(pt&&pt.st){x.lineJoin='round';x.lineWidth=Math.max(2,s*0.16);x.strokeStyle=pt.st;lines.forEach((l,i)=>x.strokeText(l,cxp,y0+i*s*1.22))}
+  x.fillStyle=pt?pt.fg:'#111';lines.forEach((l,i)=>x.fillText(l,cxp,y0+i*s*1.22));
 }
 
 /* ---------- OCR ---------- */
@@ -1109,8 +1134,8 @@ function linesText(arr){const lines=[];
   for(const w of arr){const h=w.bbox.y1-w.bbox.y0,c=(w.bbox.y0+w.bbox.y1)/2,L=lines.find(l=>Math.abs(l.c-c)<0.5*h);L?L.w.push(w):lines.push({c,w:[w]})}
   return lines.sort((a,b)=>a.c-b.c).map(l=>l.w.sort((a,b)=>a.bbox.x0-b.bbox.x0).map(w=>w.text).join(' ')).join('\n')}
 function cluster(arr){return {words:arr,text:linesText(arr),X0:Math.min(...arr.map(w=>w.bbox.x0)),Y0:Math.min(...arr.map(w=>w.bbox.y0)),X1:Math.max(...arr.map(w=>w.bbox.x1)),Y1:Math.max(...arr.map(w=>w.bbox.y1)),conf:arr.reduce((s,w)=>s+w.confidence,0)/arr.length,n:arr.length}}
-function groupWords(words,W){
-  const ws=words.filter(w=>{const t=w.text.trim(),h=w.bbox.y1-w.bbox.y0;return w.confidence>=55&&/\p{L}/u.test(t)&&h>=W*0.008&&h<=W*0.12&&(t.length>1||/^[AIaiOoYyEe]$/.test(t))});
+function groupWords(words,W,cjk){
+  const ws=words.filter(w=>{const t=w.text.trim(),h=w.bbox.y1-w.bbox.y0;return w.confidence>=55&&/\p{L}/u.test(t)&&h>=W*0.008&&h<=W*0.12&&(t.length>1||cjk||/^[AIaiOoYyEe]$/.test(t))});
   const n=ws.length,par=[...Array(n).keys()],f=i=>par[i]===i?i:(par[i]=f(par[i]));
   for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const a=ws[i].bbox,b=ws[j].bbox,ha=a.y1-a.y0,hb=b.y1-b.y0,hm=Math.max(ha,hb);
     if(Math.min(ha,hb)/hm<0.5)continue;
@@ -1156,6 +1181,26 @@ function cleanCJK(t,lang){
   return t.replace(/^[\s.,、。・\-–—:;]+/,'').replace(/(?<=[!?！？])[.。、]+/g,'').trim();
 }
 function cjkOk(t,conf){const n=(t.match(CJKg)||[]).length;return n>=2&&n/t.replace(/\s/g,'').length>=0.6&&conf>=50}
+function joinLines(kept,allWords,cjk){
+  const lines=kept.filter(k=>!k.balloon&&k.rw);if(!lines.length)return;
+  const ws=allWords.filter(w=>w&&w.bbox&&w.confidence>20&&/[\p{L}]/u.test(w.text||''));
+  const vov=(a,b)=>Math.min(a.Y1,b.Y1)-Math.max(a.Y0,b.Y0),box=w=>({X0:w.bbox.x0,Y0:w.bbox.y0,X1:w.bbox.x1,Y1:w.bbox.y1});
+  const has=(k,w)=>k.rw.some(x=>Math.abs(x.bbox.x0-w.bbox.x0)<4&&Math.abs(x.bbox.y0-w.bbox.y0)<4);
+  for(const k of lines){let grew=true;
+    while(grew){grew=false;const hgt=k.Y1-k.Y0;
+      for(const w of ws){if(has(k,w))continue;const b=box(w),hb=b.Y1-b.Y0;if(hb<hgt*0.45||hb>hgt*1.8)continue;
+        if(vov(k,b)<0.5*Math.min(hgt,hb))continue;const gap=Math.max(b.X0-k.X1,k.X0-b.X1);if(gap>1.6*hgt)continue;
+        if(!(w.confidence>55||(w.confidence>25&&gap<0.5*hgt)))continue;
+        k.rw.push(w);k.X0=Math.min(k.X0,b.X0);k.X1=Math.max(k.X1,b.X1);k.Y0=Math.min(k.Y0,b.Y0);k.Y1=Math.max(k.Y1,b.Y1);grew=true}}}
+  for(let i=0;i<lines.length;i++)for(let j=lines.length-1;j>i;j--){const a=lines[i],b=lines[j];if(!kept.includes(b))continue;const hgt=Math.max(a.Y1-a.Y0,b.Y1-b.Y0);
+    if(vov(a,b)<0.5*Math.min(a.Y1-a.Y0,b.Y1-b.Y0))continue;if(Math.max(b.X0-a.X1,a.X0-b.X1)>1.6*hgt)continue;
+    a.rw.push(...b.rw.filter(w=>!has(a,w)));a.X0=Math.min(a.X0,b.X0);a.X1=Math.max(a.X1,b.X1);a.Y0=Math.min(a.Y0,b.Y0);a.Y1=Math.max(a.Y1,b.Y1);kept.splice(kept.indexOf(b),1);lines.splice(j,1)}
+  for(const k of lines){if(!kept.includes(k))continue;
+    const uniq=[];for(const w of [...k.rw].sort((a,b)=>a.bbox.x0-b.bbox.x0))if(!uniq.some(u=>Math.min(u.bbox.x1,w.bbox.x1)-Math.max(u.bbox.x0,w.bbox.x0)>0.5*Math.min(u.bbox.x1-u.bbox.x0,w.bbox.x1-w.bbox.x0)))uniq.push(w);
+    k.wb=k.rw.map(w=>({x0:w.bbox.x0,y0:w.bbox.y0,x1:w.bbox.x1,y1:w.bbox.y1}));
+    const txt=uniq.filter(w=>w.confidence>40||(w.text||'').length>2).map(w=>w.text).join(' ');
+    const t=cjk?cleanCJK(txt,'ko'):clean(txt);if(t)k.t=t}
+}
 async function ocrPage(p,src){
   const L=LANGS[src]||LANGS.en;
   const img=new Image();img.src=p.url;await img.decode();
@@ -1169,14 +1214,59 @@ async function ocrPage(p,src){
     const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
     for(let yy=0;yy<bh;yy++){const s=b.spans[(yy/sc)|0];if(!s||s[1]<0)continue;const xa=s[0]*sc,xb=(s[1]+1)*sc;x.drawImage(cv,xa,b.Y0+yy,xb-xa,1,xa-b.X0+pad,yy+pad,xb-xa,1)}return c};
   const area=r=>Math.max(1,(r.X1-r.X0)*(r.Y1-r.Y0)),inter=(a,b)=>Math.max(0,Math.min(a.X1,b.X1)-Math.max(a.X0,b.X0))*Math.max(0,Math.min(a.Y1,b.Y1)-Math.max(a.Y0,b.Y0));
+  // imagem auxiliar só com o que é bem claro (letra branca vira preta), para achar texto branco em cima do desenho
+  const binCv=dark=>{const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),o=x.createImageData(W,H),q=o.data;
+    for(let i=0;i<W*H;i++){const l=full[i*4]*0.3+full[i*4+1]*0.59+full[i*4+2]*0.11,v=(dark?l<105:l>212)?0:255;q[i*4]=q[i*4+1]=q[i*4+2]=v;q[i*4+3]=255}x.putImageData(o,0,0);return c};
+  let _lc=null,_dc=null;const lightCv=()=>_lc||(_lc=binCv(false)),darkCv=()=>_dc||(_dc=binCv(true));
+  // relê uma fala fora de balão nas versões só-claro e só-escuro e fica com a leitura mais confiável
+  const reread=async(k,wk,cjk)=>{const hgt=k.Y1-k.Y0,pd=Math.round(hgt*0.35),x0=Math.max(0,k.X0-pd),y0=Math.max(0,k.Y0-pd),x1=Math.min(W,k.X1+pd),y1=Math.min(H,k.Y1+pd);
+    const up=hgt<40?2:1;let best=null;
+    for(const srcCv of [lightCv(),darkCv(),cv]){const c=document.createElement('canvas');c.width=(x1-x0)*up;c.height=(y1-y0)*up;const g2=c.getContext('2d');g2.fillStyle='#fff';g2.fillRect(0,0,c.width,c.height);
+      g2.drawImage(srcCv,x0,y0,x1-x0,y1-y0,0,0,c.width,c.height);
+      const r=await wk.recognize(c);const t=cjk?cleanCJK(r.data.text,src):trimEdges(src==='en'?fixWords(clean(r.data.text)):clean(r.data.text));
+      const ok=cjk?cjkOk(t,r.data.confidence):looksReal(t,r.data.confidence,true);
+      const q=ocrQual(t,cjk);if(ok&&(!best||q>best.q||(q===best.q&&r.data.confidence>best.conf)))best={t,conf:r.data.confidence,q}}
+    const q0=ocrQual(k.t,cjk);if(best&&(best.q>q0||(best.q===q0&&best.conf>(k.conf||0)))){k.t=best.t;k.conf=best.conf}};
+  // lê de novo usando só os pixels da cor da letra (tira o contorno e o desenho de trás)
+  const colorRead=async(k,wk,cjk)=>{if(!k.wb||!k.wb.length)return;const f=v=>+v.toFixed(3);
+    const it={o:k.t,wb:k.wb.map(w=>[f(w.x0/W*100),f(w.y0/H*100),f((w.x1-w.x0)/W*100),f((w.y1-w.y0)/H*100)])};
+    let pt;try{pt=makePatch(cv,W,H,it)}catch{return}if(!pt||!pt.st)return;
+    const fg=[1,3,5].map(i=>parseInt(pt.fg.slice(i,i+2),16));
+    const hgt=k.Y1-k.Y0,pd=Math.round(hgt*0.12),x0=Math.max(0,k.X0-pd),y0=Math.max(0,k.Y0-pd),x1=Math.min(W,k.X1+pd),y1=Math.min(H,k.Y1+pd),cw=x1-x0,chh=y1-y0;
+    const c=document.createElement('canvas'),up=2,brd=20;c.width=cw*up+brd*2;c.height=chh*up+brd*2;const g2=c.getContext('2d');
+    const hs=k.wb.map(w=>w.y1-w.y0).sort((a,b)=>a-b),mh=hs[hs.length>>1]||hgt;
+    await wk.setParameters({tessedit_pageseg_mode:hgt>mh*1.8?(cjk?'5':'6'):'7'});let bestT=null,bestQ=ocrQual(k.t,cjk);
+    for(const TH of [60,90,120]){
+    const o=g2.createImageData(cw,chh),q=o.data;
+    for(let yy=0;yy<chh;yy++)for(let xx=0;xx<cw;xx++){const i=((y0+yy)*W+x0+xx)*4,j=(yy*cw+xx)*4;
+      const d=Math.hypot(full[i]-fg[0],full[i+1]-fg[1],full[i+2]-fg[2]),v=d<TH?0:255;q[j]=q[j+1]=q[j+2]=v;q[j+3]=255}
+    const t1=document.createElement('canvas');t1.width=cw;t1.height=chh;t1.getContext('2d').putImageData(o,0,0);
+    g2.fillStyle='#fff';g2.fillRect(0,0,c.width,c.height);g2.drawImage(t1,brd,brd,cw*up,chh*up);
+    const r=await wk.recognize(c);const t=cjk?cleanCJK(r.data.text,src):trimEdges(src==='en'?fixWords(clean(r.data.text)):clean(r.data.text));
+    const ok=cjk?cjkOk(t,r.data.confidence):looksReal(t,r.data.confidence,true);
+    const qq=ocrQual(t,cjk);if(ok&&qq>bestQ){bestQ=qq;bestT=t}}
+    if(bestT)k.t=bestT};
   const kept=[];
+  const wOk=w=>w&&w.bbox&&w.confidence>15&&/[\p{L}]/u.test(w.text||'');
+  const fromCrop=(words,b)=>(words||[]).filter(wOk).map(w=>({x0:w.bbox.x0+b.X0-8,y0:w.bbox.y0+b.Y0-8,x1:w.bbox.x1+b.X0-8,y1:w.bbox.y1+b.Y0-8}));
+  const fromPage=words=>(words||[]).filter(wOk).map(w=>({x0:w.bbox.x0,y0:w.bbox.y0,x1:w.bbox.x1,y1:w.bbox.y1}));
   if(L.cjk){
     // mangá/manhua/manhwa: lê cada balão, na vertical e na horizontal, e fica com a leitura mais confiável
     for(const b of balloons){const c=crop(b);let best=null;
       for(const lang of L.ocr){const wk=await getW(lang);await wk.setParameters({tessedit_pageseg_mode:lang.endsWith('_vert')?'5':'6'});
         const {data}=await wk.recognize(c);const t=cleanCJK(data.text,src),n=(t.match(CJKg)||[]).length,score=data.confidence*Math.sqrt(n);
-        if(cjkOk(t,data.confidence)&&(!best||score>best.score))best={t,conf:data.confidence,score}}
+        if(cjkOk(t,data.confidence)&&(!best||score>best.score))best={t,conf:data.confidence,score,wb:fromCrop(data.words,b)}}
       if(best)kept.push({...best,X0:b.X0,Y0:b.Y0,X1:b.X1,Y1:b.Y1,balloon:b})}
+    // texto fora de balões brancos (caixas coloridas, narração em cima do desenho — comum em manhwa)
+    const hz=L.ocr.find(l=>!l.endsWith('_vert'))||L.ocr[0];const wk=await getW(hz);await wk.setParameters({tessedit_pageseg_mode:'11'});
+    const {data:pd}=await wk.recognize(cv);
+    const {data:pl}=await wk.recognize(lightCv());
+    for(const c of [...groupWords(pd.words||[],W,true),...groupWords(pl.words||[],W,true)]){const t=cleanCJK(c.text,src),n=(t.match(CJKg)||[]).length;
+      if(n<2||c.conf<72||kept.some(k=>inter(k,c)>0.3*Math.min(area(k),area(c))))continue;
+      kept.push({t,conf:c.conf,X0:c.X0,Y0:c.Y0,X1:c.X1,Y1:c.Y1,wb:fromPage(c.words),rw:c.words})}
+    joinLines(kept,[...(pd.words||[]),...(pl.words||[])],true);
+    await wk.setParameters({tessedit_pageseg_mode:'7'});
+    for(const k of kept)if(!k.balloon){await reread(k,wk,true);await colorRead(k,wk,true)}
   }else{
     const wk=await getW(L.ocr[0]);
     await wk.setParameters({tessedit_pageseg_mode:'11'});
@@ -1188,20 +1278,145 @@ async function ocrPage(p,src){
       const P=inside.length?cluster(inside.flatMap(c=>c.words)):null,pt=P?clean(P.text):'';
       const r=await wk.recognize(crop(b));const bt=clean(r.data.text),bc=r.data.confidence;
       const bOk=looksReal(bt,bc,true),pOk=P&&looksReal(pt,P.conf,true);let pick=null;
+      const BW=fromCrop(r.data.words,b),PW=P?fromPage(P.words):[];
       if(bOk&&pOk)pick=nl(bt)===nl(pt)?(bc>=P.conf?{t:bt,conf:bc}:{t:pt,conf:P.conf}):(nl(bt)>nl(pt)?{t:bt,conf:bc}:{t:pt,conf:P.conf});
       else if(bOk)pick={t:bt,conf:bc};else if(pOk)pick={t:pt,conf:P.conf};
+      if(pick)pick.wb=BW.length?BW:PW;
       if(pick)kept.push({...pick,X0:b.X0,Y0:b.Y0,X1:b.X1,Y1:b.Y1,balloon:b})}
-    for(const c of pageC){if(used.has(c))continue;const t=clean(c.text);
+    await wk.setParameters({tessedit_pageseg_mode:'11'});
+    const {data:pl}=await wk.recognize(lightCv());
+    const lightC=groupWords(pl.words||[],W).filter(c=>!balloons.some(b=>inter(b,c)>0.5*area(c)));
+    for(const c of [...pageC,...lightC]){if(used.has(c))continue;const t=clean(c.text);
       if(!looksReal(t,c.conf,false)||kept.some(k=>inter(k,c)>0.35*Math.min(area(k),area(c))))continue;
-      kept.push({t,conf:c.conf,X0:c.X0,Y0:c.Y0,X1:c.X1,Y1:c.Y1})}
+      kept.push({t,conf:c.conf,X0:c.X0,Y0:c.Y0,X1:c.X1,Y1:c.Y1,wb:fromPage(c.words),rw:c.words})}
+    joinLines(kept,[...(data.words||[]),...(pl.words||[])],false);
+    await wk.setParameters({tessedit_pageseg_mode:'7'});
+    for(const k of kept)if(!k.balloon){await reread(k,wk,false);await colorRead(k,wk,false)}
+    for(const k of kept){if(!k.balloon)k.t=trimEdges(k.t);if(src==='en')k.t=fixWords(k.t)}
   }
   return kept.map(c=>{let r;const bl=c.balloon;
     if(bl){const dx=(bl.X1-bl.X0)*0.1,dy=(bl.Y1-bl.Y0)*0.12;r={X0:bl.X0+dx,Y0:bl.Y0+dy,X1:bl.X1-dx,Y1:bl.Y1-dy}}
     else{const px=(c.Y1-c.Y0)*0.25;r={X0:c.X0-px,Y0:c.Y0-px,X1:c.X1+px,Y1:c.Y1+px}}
-    return {o:c.t,t:'',x:+(r.X0/W*100).toFixed(2),y:+(r.Y0/H*100).toFixed(2),w:+((r.X1-r.X0)/W*100).toFixed(2),h:+((r.Y1-r.Y0)/H*100).toFixed(2)}})
+    const f=v=>+v.toFixed(3);
+    return {o:c.t,t:'',bl:bl?1:0,x:+(r.X0/W*100).toFixed(2),y:+(r.Y0/H*100).toFixed(2),w:+((r.X1-r.X0)/W*100).toFixed(2),h:+((r.Y1-r.Y0)/H*100).toFixed(2),
+      wb:(c.wb||[]).map(w=>[f(w.x0/W*100),f(w.y0/H*100),f((w.x1-w.x0)/W*100),f((w.y1-w.y0)/H*100)])}})
    .sort((a,b)=>Math.abs(a.y-b.y)>3?a.y-b.y:(L.rtl?b.x-a.x:a.x-b.x));
 }
 
+/* ---------- apagar só o texto original e reconstruir o fundo ---------- */
+const patchCache=new WeakMap();
+async function pageImage(p){if(p._img&&p._imgUrl===p.url)return p._img;const im=new Image();im.src=p.url;await im.decode();p._img=im;p._imgUrl=p.url;return im}
+const lum=c=>0.299*c[0]+0.587*c[1]+0.114*c[2];
+const hex=c=>'#'+c.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+function makePatch(src,W,H,t){
+  if(!t.wb||!t.wb.length)return null;
+  let B=t.wb.map(b=>[b[0]/100*W,b[1]/100*H,b[2]/100*W,b[3]/100*H]);
+  {const hs=B.map(b=>b[3]).sort((a,b)=>a-b),mh=hs[hs.length>>1];
+   const ok=B.filter(b=>b[3]<=mh*1.45&&b[3]>=mh*0.55);
+   // na dúvida, fica com a altura mais comum entre as caixas mais baixas (letras de verdade)
+   const small=hs.filter(v=>v<=hs[0]*1.4),ms=small[small.length>>1];
+   const ok2=B.filter(b=>b[3]<=ms*1.45&&b[3]>=ms*0.55);
+   const good=(ok2.length>=Math.max(1,ok.length*0.5)&&ok2.reduce((a,b)=>a+b[2],0)>=ok.reduce((a,b)=>a+b[2],0)*0.5)?ok2:ok;if(!good.length)return null;
+   // caixas altas demais (pegaram desenho junto) são cortadas na altura da linha de letras que elas cruzam
+   const clipped=[];for(const b of B){if(good.includes(b)){clipped.push(b);continue}
+     const rows=good.filter(g=>Math.min(g[1]+g[3],b[1]+b[3])-Math.max(g[1],b[1])>g[3]*0.5);if(!rows.length)continue;
+     const y0=Math.min(...rows.map(g=>g[1])),y1=Math.max(...rows.map(g=>g[1]+g[3]));clipped.push([b[0],y0,b[2],y1-y0])}
+   B=clipped}
+  const th=Math.max(...B.map(b=>b[3])),pad=Math.max(6,Math.round(th*0.6));
+  let X0=Math.max(0,Math.floor(Math.min(...B.map(b=>b[0]))-pad)),Y0=Math.max(0,Math.floor(Math.min(...B.map(b=>b[1]))-pad));
+  let X1=Math.min(W,Math.ceil(Math.max(...B.map(b=>b[0]+b[2]))+pad)),Y1=Math.min(H,Math.ceil(Math.max(...B.map(b=>b[1]+b[3]))+pad));
+  const w=X1-X0,h=Y1-Y0;if(w<4||h<4)return null;
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});
+  x.drawImage(src,X0,Y0,w,h,0,0,w,h);const id=x.getImageData(0,0,w,h),d=id.data,N=w*h;
+  // 1) área das palavras (um pouco maior, para pegar contornos)
+  const inB=new Uint8Array(N),g=Math.max(3,Math.round(th*0.2)),gx=Math.max(3,Math.round(th*0.25));
+  for(const b of B){const xa=Math.max(0,Math.floor(b[0]-X0-gx)),ya=Math.max(0,Math.floor(b[1]-Y0-g)),xb=Math.min(w,Math.ceil(b[0]+b[2]-X0+gx)),yb=Math.min(h,Math.ceil(b[1]+b[3]-Y0+g));
+    for(let yy=ya;yy<yb;yy++)for(let xx=xa;xx<xb;xx++)inB[yy*w+xx]=1}
+  // 2) cor de fundo = mediana do que está em volta das palavras
+  const med=arr=>{arr.sort((a,b)=>a-b);return arr[arr.length>>1]||0};
+  const R=[],G=[],Bl=[];for(let i=0;i<N;i+=2)if(!inB[i]){R.push(d[i*4]);G.push(d[i*4+1]);Bl.push(d[i*4+2])}
+  const bg=R.length?[med(R),med(G),med(Bl)]:[255,255,255];
+  // 3) pixels de letra = dentro das palavras e com cor bem diferente do fundo
+  const m=new Uint8Array(N),fr=[],fg_=[],fb=[];
+  for(let i=0;i<N;i++){if(!inB[i])continue;const dr=d[i*4]-bg[0],dg=d[i*4+1]-bg[1],db=d[i*4+2]-bg[2];
+    if(dr*dr+dg*dg+db*db>38*38){m[i]=1;fr.push(d[i*4]);fg_.push(d[i*4+1]);fb.push(d[i*4+2])}}
+  // separa os pixels da letra em dois grupos (claro/escuro); o que encosta mais no fundo é o contorno
+  let fill=null,stroke=null;
+  {const idx=[];for(let i=0;i<N;i++)if(m[i])idx.push(i);
+   if(idx.length){const L2=idx.map(i=>0.299*d[i*4]+0.587*d[i*4+1]+0.114*d[i*4+2]);
+     let lo=Math.min(...L2),hi=Math.max(...L2),thr=(lo+hi)/2;for(let it=0;it<8;it++){let a=0,na=0,b=0,nb=0;L2.forEach(v=>{if(v<thr){a+=v;na++}else{b+=v;nb++}});if(!na||!nb)break;thr=(a/na+b/nb)/2}
+     const grp=[[],[]],edge=[0,0];
+     idx.forEach((i,k)=>{const g2=L2[k]<thr?0:1;grp[g2].push(i);const xx=i%w,yy=(i/w)|0;
+       if((xx>0&&!m[i-1])||(xx<w-1&&!m[i+1])||(yy>0&&!m[i-w])||(yy<h-1&&!m[i+w]))edge[g2]++});
+     const medOf=arr=>{const r=[],g3=[],b3=[];arr.forEach(i=>{r.push(d[i*4]);g3.push(d[i*4+1]);b3.push(d[i*4+2])});return [med(r),med(g3),med(b3)]};
+     const n0=grp[0].length,n1=grp[1].length,tot=n0+n1;
+     if(Math.min(n0,n1)<tot*0.18||Math.abs(lo-hi)<60){fill=medOf(idx)}
+     else{// fecha buracos finos e afina: o que sobra no meio é o miolo da letra
+       let cl=new Uint8Array(m);const dil=(src2,keep)=>{const o2=new Uint8Array(src2);for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const i=yy*w+xx;
+         const nb=[xx>0?src2[i-1]:keep?0:1,xx<w-1?src2[i+1]:keep?0:1,yy>0?src2[i-w]:keep?0:1,yy<h-1?src2[i+w]:keep?0:1];
+         if(keep){if(!src2[i]&&nb.some(v=>v))o2[i]=1}else{if(src2[i]&&nb.some(v=>!v))o2[i]=0}}return o2};
+       cl=dil(cl,true);const er=Math.max(2,Math.round(th*0.09));for(let k=0;k<er+1;k++)cl=dil(cl,false);
+       const inn=[0,0];grp[0].forEach(i=>{if(cl[i])inn[0]++});grp[1].forEach(i=>{if(cl[i])inn[1]++});
+       const f=(inn[0]/n0)>=(inn[1]/n1)?0:1;fill=medOf(grp[f]);stroke=medOf(grp[1-f])}}}
+  const fg=fill||[20,20,20];
+  // apaga a área inteira das palavras (letra + contorno) e reconstrói misturando as cores das 4 direções
+  // máscara = pixels de letra/contorno, engrossados um pouco, só dentro da área das palavras
+  let mk=m;const rr=Math.max(2,Math.round(th*0.14));
+  for(let k=0;k<rr;k++){const n2=new Uint8Array(mk);for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const i=yy*w+xx;if(mk[i]||!inB[i])continue;
+    if((xx>0&&mk[i-1])||(xx<w-1&&mk[i+1])||(yy>0&&mk[i-w])||(yy<h-1&&mk[i+w]))n2[i]=1}mk=n2}
+  const src0=new Uint8ClampedArray(d);
+  const acc=new Float32Array(N*3),wsum=new Float32Array(N);
+  const addRun=(get,len,setIdx)=>{let i=0;while(i<len){if(!mk[setIdx(i)]){i++;continue}let j=i;while(j<len&&mk[setIdx(j)])j++;
+      const a=i-1,bq=j,ia=a>=0?setIdx(a):-1,ib=bq<len?setIdx(bq):-1;
+      for(let k=i;k<j;k++){const idx=setIdx(k);
+        if(ia>=0){const wgt=1/(k-a);for(let ch=0;ch<3;ch++)acc[idx*3+ch]+=src0[ia*4+ch]*wgt;wsum[idx]+=wgt}
+        if(ib>=0){const wgt=1/(bq-k);for(let ch=0;ch<3;ch++)acc[idx*3+ch]+=src0[ib*4+ch]*wgt;wsum[idx]+=wgt}}
+      i=j}};
+  for(let yy=0;yy<h;yy++)addRun(null,w,k=>yy*w+k);
+  for(let xx=0;xx<w;xx++)addRun(null,h,k=>k*w+xx);
+  for(let i=0;i<N;i++){if(!mk[i]||!wsum[i])continue;for(let ch=0;ch<3;ch++)d[i*4+ch]=acc[i*3+ch]/wsum[i]}
+  // suaviza a área reconstruída (e um pouquinho da borda, para não marcar)
+  const soft=new Uint8Array(N);for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const i=yy*w+xx;if(mk[i]){soft[i]=1;continue}
+    for(let o=1;o<=0&&!soft[i];o++)if((xx>=o&&mk[i-o])||(xx<w-o&&mk[i+o])||(yy>=o&&mk[i-o*w])||(yy<h-o&&mk[i+o*w]))soft[i]=1}
+  const rad=Math.max(1,Math.round(th*0.1));
+  for(let pass=0;pass<2;pass++){const cp=new Uint8ClampedArray(d);
+    for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const i=yy*w+xx;if(!soft[i])continue;let r=0,gg=0,b2=0,n=0;
+      for(let oy=-rad;oy<=rad;oy+=1){const Y=yy+oy;if(Y<0||Y>=h)continue;for(let ox=-rad;ox<=rad;ox+=1){const X=xx+ox;if(X<0||X>=w)continue;const j=(Y*w+X)*4;r+=cp[j];gg+=cp[j+1];b2+=cp[j+2];n++}}
+      d[i*4]=r/n;d[i*4+1]=gg/n;d[i*4+2]=b2/n}}
+  x.putImageData(id,0,0);
+  const hs2=B.map(b=>b[3]).sort((a,b)=>a-b),lh=hs2[hs2.length>>1];
+  const tx0=Math.min(...B.map(b=>b[0])),tx1=Math.max(...B.map(b=>b[0]+b[2])),ty0=Math.min(...B.map(b=>b[1])),ty1=Math.max(...B.map(b=>b[1]+b[3]));
+  const caps=(()=>{const u=(t.o.match(/\p{Lu}/gu)||[]).length,l=(t.o.match(/\p{Ll}/gu)||[]).length;return u>=l})();
+  return {cv:c,X:X0,Y:Y0,w,h,fg:hex(fg),st:stroke?hex(stroke):null,bg,fs:lh/(caps?0.74:0.98)*(stroke?0.8:0.92),caps,cx:(tx0+tx1)/2,cy:(ty0+ty1)/2,tw:tx1-tx0,th:ty1-ty0};
+}
+async function getPatch(p,t){let pt=patchCache.get(t);if(pt&&pt.o===t.o)return pt;const im=await pageImage(p);pt=makePatch(im,im.naturalWidth,im.naturalHeight,t);if(pt)pt.o=t.o;patchCache.set(t,pt||{none:1,o:t.o});return pt}
+const ENW=new Set(["a", "about", "after", "again", "against", "all", "almost", "alone", "already", "also", "always", "am", "an", "and", "another", "any", "anyone", "anything", "are", "around", "as", "ask", "at", "away", "back", "bad", "be", "because", "been", "before", "being", "believe", "best", "better", "big", "both", "boy", "brother", "but", "by", "call", "came", "can", "can't", "cannot", "care", "come", "could", "dad", "day", "dead", "did", "didn't", "die", "do", "does", "doesn't", "don't", "done", "down", "each", "enough", "even", "ever", "every", "everyone", "everything", "eye", "eyes", "face", "far", "father", "feel", "few", "find", "fine", "first", "for", "forget", "forgive", "friend", "friends", "from", "get", "girl", "give", "go", "god", "going", "gone", "good", "got", "great", "guess", "guy", "had", "hand", "happy", "hard", "has", "have", "he", "hear", "heart", "hello", "help", "her", "here", "hey", "him", "his", "home", "hope", "how", "hurry", "i", "i'm", "if", "in", "is", "isn't", "it", "it's", "just", "keep", "kill", "kind", "know", "last", "late", "leave", "let", "let's", "life", "like", "listen", "little", "live", "long", "look", "looking", "lost", "love", "made", "make", "man", "many", "may", "me", "mean", "meet", "miss", "missed", "missing", "mom", "more", "most", "mother", "much", "must", "my", "myself", "name", "need", "never", "new", "next", "nice", "night", "no", "not", "nothing", "now", "of", "off", "oh", "ok", "okay", "old", "on", "once", "one", "only", "open", "or", "other", "our", "out", "over", "people", "place", "please", "power", "promise", "put", "really", "right", "run", "said", "same", "saw", "say", "see", "seem", "she", "should", "sir", "sister", "so", "some", "someone", "something", "sorry", "soon", "still", "stop", "strong", "such", "sure", "take", "talk", "tell", "than", "thank", "thanks", "that", "that's", "the", "their", "them", "then", "there", "they", "thing", "things", "think", "this", "those", "though", "thought", "time", "to", "today", "together", "told", "tomorrow", "too", "true", "try", "turn", "two", "understand", "until", "up", "us", "very", "wait", "want", "wanted", "was", "way", "we", "well", "went", "were", "what", "what's", "when", "where", "which", "while", "who", "whole", "why", "will", "wish", "with", "without", "won't", "world", "would", "wow", "yeah", "yes", "yet", "you", "you're", "your", "yourself"]);
+// tira letra solta grudada pelo OCR no começo de uma palavra ("AWHERE" → "WHERE")
+function ocrQual(t,cjk){if(cjk)return (t.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu)||[]).length-(t.match(/[A-Za-z]/g)||[]).length*2;
+  let sc=0;const junk=(t.match(/[^\p{L}\p{N}\s.,!?'’"…\-:;()]/gu)||[]).length;sc-=junk*3;
+  for(const w of t.match(/\p{L}[\p{L}'’]*/gu)||[]){const l=w.toLowerCase(),cons=w===w.toUpperCase()||w===w.toLowerCase()||w===w[0]+w.slice(1).toLowerCase();
+    if(!cons||(w.length>2&&!/[aeiouyáéíóúãõâêôàü]/i.test(w))||w.length>15)sc-=3;else sc+=1;if(ENW.has(l.replace('’',"'")))sc+=3}
+  return sc}
+// limpa sujeira do OCR nas pontas: aspas/sinais soltos no começo, letra solta no fim
+function trimEdges(t){t=t.replace(/^[^\p{L}\p{N}¿¡(…"“]+/u,'').replace(/^["“]\s+/,'"');if(((t.match(/["“”]/g)||[]).length)%2)t=t.replace(/["“”]/,'');
+  return t.replace(/([.!?…])\s+[\p{L}\p{N}'’]{1,3}$/u,'$1').replace(/\s+[^\p{L}\p{N}\s.!?…]+$/u,'').trim()}
+function fixWords(t){t=t.replace(/^[|l1](?=\s)/,'I');return t.replace(/[A-Za-z']{3,}/g,w=>{const l=w.toLowerCase();if(ENW.has(l))return w;
+    if(l.length>=5)for(let i=2;i<=l.length-2;i++){if(ENW.has(l.slice(0,i))&&ENW.has(l.slice(i)))return w.slice(0,i)+' '+w.slice(i);
+      if(i<=l.length-3&&ENW.has(l.slice(0,i))&&ENW.has(l.slice(i+1)))return w.slice(0,i)+' '+w.slice(i+1)}if(l.length>=5&&ENW.has(l.slice(1)))return w.slice(1);return w})}
+const strokeShadow=c=>{const e='.055em';return `-${e} -${e} 0 ${c},${e} -${e} 0 ${c},-${e} ${e} 0 ${c},${e} ${e} 0 ${c},0 -${e} 0 ${c},0 ${e} 0 ${c},-${e} 0 0 ${c},${e} 0 0 ${c}`};
+async function decorate(p,ov){
+  if(opt.style==='white'||!p.items||!p.url)return;
+  const W=100,boxes=[...ov.querySelectorAll('.bx')];
+  for(const el of boxes){const k=+el.dataset.k.split(':')[1],t=p.items[k];if(!t||!t.wb||!t.wb.length)continue;
+    let pt;try{pt=await getPatch(p,t)}catch{continue}if(!pt||pt.none||!el.isConnected)continue;
+    const im=p._img,cv=pt.cv,c2=document.createElement('canvas');c2.width=cv.width;c2.height=cv.height;c2.getContext('2d').drawImage(cv,0,0);c2.className='patch';
+    c2.style.cssText=`left:${pt.X/im.naturalWidth*100}%;top:${pt.Y/im.naturalHeight*100}%;width:${pt.w/im.naturalWidth*100}%;height:${pt.h/im.naturalHeight*100}%`;
+    ov.insertBefore(c2,ov.firstChild);
+    el.classList.add('clean');el.style.color=pt.fg;el.style.textShadow='none';if(pt.st){el.style.setProperty('--sc',pt.st);el.style.setProperty('--sw','.16em')}else el.style.setProperty('--sw','0');
+    el.dataset.fsn=pt.fs;el.style.textTransform=pt.caps?'uppercase':'none';ov.dataset.nw=im.naturalWidth;
+    el.dataset.tw=pt.tw;el.dataset.th=pt.th;if(!t.bl){el.classList.add('free');el.style.left=(pt.cx/im.naturalWidth*100)+'%';el.style.top=(pt.cy/im.naturalHeight*100)+'%';el.style.width='';el.style.height=''}}
+  fit(ov);
+}
 /* ---------- tradução (Google Tradutor; MyMemory de reserva) ---------- */
 const trCache=ls.get('ms-tr')||{};
 function sentenceCase(t){const up=(t.match(/\p{Lu}/gu)||[]).length,lo=(t.match(/\p{Ll}/gu)||[]).length;if(up<2||up<(up+lo)*0.7)return t;
