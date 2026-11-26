@@ -304,7 +304,8 @@ html.dark .admchip.tag{border-color:var(--tc);background:color-mix(in srgb,var(-
 .reveal small{font-weight:600;font-size:12px;opacity:.85}
 .pacts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
 .act{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border-radius:999px;border:0;background:transparent;color:#4b5563;font:700 13px/1 Nunito,sans-serif;cursor:pointer}
-.act:hover{background:#eef3f9;color:#111}.act svg{width:18px;height:18px}
+.act:hover{background:#eef3f9;color:#111}.act svg{width:21px;height:21px}
+.pacts{gap:4px}.pacts .act{min-width:42px;min-height:42px;padding:0 10px;justify-content:center}.act .cnt{font-size:13px}
 .act.del:hover{color:var(--bad);background:#fdeeee}
 .pacts .spacer{flex:1}
 .imgpick{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
@@ -355,7 +356,25 @@ dialog.imgv .dacts{justify-content:center}
 .menuitem svg{width:34px;height:34px;flex:none}
 .menuitem b{display:block;font-size:15px}.menuitem small{display:block;color:var(--mute);font-size:13px;line-height:1.3}
 .menuitem:hover{border-color:#111}
-#recs .rwrap{max-width:820px}
+#recs .rwrap{max-width:820px;padding-bottom:96px}
+.fab{position:fixed;right:max(18px,calc(50vw - 430px));bottom:calc(22px + env(safe-area-inset-bottom));z-index:30;width:60px;height:60px;border-radius:50%;border:0;background:#111;color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 14px 30px -10px rgba(20,40,70,.6),0 0 0 4px rgba(255,255,255,.7);transition:transform .15s}
+.fab:hover{transform:scale(1.06)}.fab:active{transform:scale(.95)}.fab svg{width:28px;height:28px}
+html.dark .fab{background:#e6ebf2;color:#000;box-shadow:0 14px 30px -10px #000,0 0 0 4px rgba(255,255,255,.08)}
+.rcdlg{width:min(640px,94vw);max-height:92vh;overflow:auto;padding:22px}.rcdlg .recform{padding:0;margin:0}
+.rchead{display:flex;align-items:flex-start;gap:10px}.rchead h2{flex:1}
+.xbtn{border:0;background:rgba(0,0,0,.06);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer;color:inherit;flex:none}html.dark .xbtn{background:rgba(255,255,255,.1)}
+.usearch{margin-bottom:14px}
+.lupa{width:40px;height:40px;border-radius:50%;border:1.5px solid currentColor;background:none;color:inherit;display:grid;place-items:center;cursor:pointer;margin-left:auto}.lupa svg{width:19px;height:19px}
+.lupa[aria-expanded=true]{background:#111;color:#fff;border-color:#111}html.dark .lupa[aria-expanded=true]{background:#e6ebf2;color:#000;border-color:#e6ebf2}
+.lupa+#rc-ref{margin-left:0}.rbar .lupa{flex:none}.lupa[hidden]{display:none}.xbtn.sm{width:30px;height:30px;font-size:13px}
+.shd{margin:16px 4px 8px;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}.msbox{display:flex;align-items:center;gap:10px;padding:0 16px;min-height:50px;border-radius:999px;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 1px var(--line)}
+.msbox svg{width:20px;height:20px;color:var(--mute);flex:none}.msbox input{flex:1;border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;min-height:46px;-webkit-appearance:none;appearance:none;font:600 16px Nunito,sans-serif;color:inherit;outline:none;min-width:0}
+html.dark .msbox input{background:transparent!important}html.dark .msbox{background:#000;box-shadow:inset 0 0 0 1px var(--line)}
+.msbox:focus-within{box-shadow:inset 0 0 0 2px #3d70c0}.msbox input:focus,.msbox input:focus-visible{outline:none!important;box-shadow:none!important}.msbox input::-webkit-search-cancel-button{display:none;-webkit-appearance:none}
+.ures{margin-top:12px;display:grid;gap:8px}.ures .space{margin:6px 4px}
+.urow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 14px;border:0;border-radius:18px;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 1px var(--line);cursor:pointer;color:inherit;font:inherit}
+.urow:hover{background:#fff}.urow .unm{display:flex;flex-direction:column;min-width:0}.urow .unm b{font-size:16px;overflow-wrap:anywhere}.urow .chips .admchip{margin:2px 0 0}
+html.dark .urow{background:#000}html.dark .urow:hover{background:#0b0f14}
 .recform{padding:22px;margin-bottom:22px}
 .recform h2{margin:0 0 4px;font-size:22px}
 .recform>p{margin:0 0 16px;color:var(--mute);font-size:14px}
@@ -588,12 +607,14 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
 </section>
 
 <section id="recs" hidden>
-  <div class="rbar"><button class="pill ghost sm" id="rc-back">‹ Voltar</button><div class="tt"><b>Comentários e indicações</b><span id="rc-n"></span></div><button class="pill ghost sm" id="rc-ref" hidden>Atualizar</button></div>
+  <div class="rbar"><button class="pill ghost sm" id="rc-back">‹ Voltar</button><div class="tt"><b>Comentários e indicações</b><span id="rc-n"></span></div><button class="lupa" id="rc-lupa" hidden aria-label="Buscar contas e publicações" aria-expanded="false" title="Buscar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg></button><button class="lupa" id="rc-ref" hidden aria-label="Atualizar o mural" title="Atualizar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M20 4v7h-7" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
   <div class="rwrap">
     <div class="rtabs" id="rc-tabs" role="tablist"><button data-rt="mural" role="tab">Mural</button><button data-rt="local" role="tab">Só no meu aparelho</button></div>
+    <div class="usearch" id="rc-search" hidden><label class="msbox"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><input type="search" id="us-q" placeholder="Buscar @contas ou palavras nos posts" autocomplete="off" aria-label="Buscar contas e publicações"><button type="button" class="xbtn sm" id="us-x" aria-label="Fechar busca">✕</button></label><div class="ures" id="us-res" aria-live="polite"></div></div>
     <div class="card empty" id="rc-login" hidden><h3>Entre para ver o mural</h3><p>O mural é de todo mundo que tem conta no Project Blue. Crie a sua com e-mail, senha e um apelido.</p><div class="cha" style="justify-content:center"><button class="pill" data-auth="in">Entrar</button><button class="pill ghost" data-auth="up">Criar conta</button></div></div>
-    <form class="card recform" id="rc-form" autocomplete="off">
-      <h2 id="rc-h">Nova indicação</h2><p id="rc-sub">Conte qual obra você recomenda, por que gostou e onde dá para ler oficialmente.</p>
+    <dialog id="rc-dlg" class="rcdlg" aria-labelledby="rc-h">
+    <form class="recform" id="rc-form" autocomplete="off">
+      <div class="rchead"><h2 id="rc-h">Nova indicação</h2><button type="button" class="xbtn" id="rc-close" aria-label="Fechar">✕</button></div><p id="rc-sub">Conte qual obra você recomenda, por que gostou e onde dá para ler oficialmente.</p>
       <div class="rgrid">
         <div class="fld"><label for="rc-t">Nome da obra</label><input class="inp" id="rc-t" maxlength="100" placeholder="ex.: Wakfu" required></div>
         <div class="fld"><label for="rc-k">Tipo</label><select class="sel" id="rc-k"><option>Mangá</option><option>Quadrinho</option><option>Webtoon</option><option>Livro</option><option>Outro</option></select></div>
@@ -607,9 +628,11 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
         <label class="check" id="rc-spolbl"><input type="checkbox" id="rc-spo"> É spoiler: a imagem aparece borrada até a pessoa tocar em "Mostrar".</label></div>
       <div class="dacts"><span class="rc-as" id="rc-as"></span><button type="button" class="pill ghost" id="rc-cancel" hidden>Cancelar edição</button><button class="pill" id="rc-save">Publicar indicação</button></div>
     </form>
+    </dialog>
     <div class="rfilter" id="rc-f"></div>
     <div class="rlist" id="rc-list"></div>
     <button class="pill ghost" id="rc-more" hidden>Carregar mais</button>
+    <button class="fab" id="rc-fab" aria-label="Escrever uma indicação" title="Escrever"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
   </div>
 </section>
 <section id="prof" hidden>
@@ -1857,10 +1880,10 @@ const saveRecs=()=>ls.set('ms-recs',recs);
 const fmtDate=t=>new Date(t).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
 function setStars(v){recStars=v;$$('#rc-s button').forEach(b=>{const on=+b.dataset.v<=v;b.classList.toggle('on',on);b.setAttribute('aria-checked',+b.dataset.v===v)})}
 $$('#rc-s button').forEach(b=>b.onclick=()=>setStars(recStars===+b.dataset.v?0:+b.dataset.v));
-function openRecs(){$('#menu').close();closeReader();if($('#recs').hidden)navPush();$('#app').hidden=true;$('#recs').hidden=false;document.body.classList.add('reading');resetRecForm();renderRecs(true);window.scrollTo(0,0)}
+function openRecs(){$('#menu').close();closeReader();if($('#recs').hidden)navPush();$('#app').hidden=true;$('#recs').hidden=false;document.body.classList.add('reading');srch=null;$('#rc-search').hidden=true;$('#us-q').value='';$('#us-res').innerHTML='';$('#rc-lupa').setAttribute('aria-expanded',false);resetRecForm();renderRecs(true);window.scrollTo(0,0)}
 function closeRecs(){if($('#recs').hidden)return;navPop();$('#recs').hidden=true;$('#app').hidden=false;document.body.classList.remove('reading')}
 $('#openrecs').onclick=openRecs;$('#rc-back').onclick=closeRecs;
-$('#rc-tabs').onclick=e=>{const b=e.target.closest('[data-rt]');if(!b||b.dataset.rt===recTab)return;recTab=b.dataset.rt;recFilter='Todos';resetRecForm();renderRecs(true)};
+$('#rc-tabs').onclick=e=>{const b=e.target.closest('[data-rt]');if(!b||b.dataset.rt===recTab)return;recTab=b.dataset.rt;srch=null;$('#rc-search').hidden=true;$('#us-q').value='';$('#rc-lupa').setAttribute('aria-expanded',false);recFilter='Todos';resetRecForm();renderRecs(true)};
 $('#rc-ref').onclick=()=>renderRecs(true);
 $('#rc-login').onclick=e=>{const a=e.target.closest('[data-auth]');if(a)openAuth(a.dataset.auth)};
 let postImg=null;const postUrls=new Map(),revealed=new Set();
@@ -1878,26 +1901,56 @@ function resetRecForm(){recEdit=null;postImg=null;$('#rc-form').reset();$('#rc-k
   $('#rc-sub').textContent=m?'Todo mundo que tem conta vai ver. Não coloque dados pessoais (nome completo, escola, endereço, telefone).':'Fica guardada só neste aparelho. Use "Compartilhar" para mandar para alguém.';
   $('#rc-save').textContent=m?'Publicar no mural':'Salvar indicação';
   $('#rc-as').textContent=m&&me?`Publicando como @${myNick}${myPrivate?' · conta privada: só seus seguidores veem':''}`:'';$('#rc-imgfld').hidden=!m;imgPrev();}
-$('#rc-cancel').onclick=resetRecForm;
+$('#rc-cancel').onclick=()=>{resetRecForm();$('#rc-dlg').close()};
+$('#rc-close').onclick=()=>{if(recEdit)resetRecForm();$('#rc-dlg').close()};
+$('#rc-fab').onclick=()=>{if(recTab==='mural'&&!me){openAuth('in');return}if(recEdit)resetRecForm();$('#rc-dlg').showModal();setTimeout(()=>$('#rc-t').focus(),50)};
+/* ---------- lupa: buscar contas e publicações ---------- */
+let srch=null,usT=0,usSeq=0;
+const muralSrc=()=>srch?srch.posts:mural;
+function openSearch(on){$('#rc-search').hidden=!on;$('#rc-lupa').setAttribute('aria-expanded',on);
+  if(on){setTimeout(()=>$('#us-q').focus(),30)}else{$('#us-q').value='';$('#us-res').innerHTML='';if(srch){srch=null;renderRecs()}}}
+$('#rc-lupa').onclick=()=>openSearch($('#rc-search').hidden);
+$('#us-x').onclick=()=>openSearch(false);
+$('#us-q').addEventListener('input',()=>{clearTimeout(usT);usT=setTimeout(()=>runSearch(),350)});
+$('#us-q').addEventListener('keydown',e=>{if(e.key==='Escape')openSearch(false);if(e.key==='Enter'){clearTimeout(usT);runSearch()}});
+const likePat=q=>'%'+q.replace(/[\\%_]/g,m=>'\\'+m)+'%';
+async function runSearch(){const raw=$('#us-q').value.trim(),seq=++usSeq;
+  if(!raw){srch=null;$('#us-res').innerHTML='';renderRecs();return}
+  $('#us-res').innerHTML='<p class="space">Procurando…</p>';
+  try{const r=await searchQueries(raw);if(seq!==usSeq)return;srch=r;recFilter='Todos';renderRecs()}
+  catch(err){if(seq===usSeq)$('#us-res').innerHTML=`<p class="space">${esc(cloudErr(err))}</p>`}}
+async function searchQueries(raw){const nick=raw.replace(/^@/,''),onlyUsers=raw.startsWith('@'),cols='id,user_id,nickname,title,kind,stars,body,where_read,image,spoiler,created_at,edited_at';
+  // busca no servidor sem diferença de acento (parte 10 do banco); se ainda não existir, usa a busca simples
+  let u,ps;const [ru,rp]=await Promise.all([sb.rpc('search_profiles',{q:nick}),onlyUsers?Promise.resolve({data:[]}):sb.rpc('search_recs',{q:raw})]);
+  if(!ru.error&&!rp.error){u=ru;ps=[rp]}
+  else{u=await sb.from('profiles').select('id,nickname,avatar').ilike('nickname',likePat(nick)).order('nickname').limit(20);
+    ps=onlyUsers?[]:await Promise.all(['title','body','kind','where_read','nickname'].map(c=>sb.from('recs').select(cols).ilike(c,likePat(raw)).order('created_at',{ascending:false}).limit(30)))}
+  if(u.error)throw u.error;
+  const seen=new Map();for(const p of ps){if(p.error)throw p.error;for(const x of p.data||[])seen.set(x.id,x)}
+  const posts=[...seen.values()].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
+  await enrichPosts(posts);await loadTags();
+  const nz=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),ql=nz(nick),users=(u.data||[]).sort((a,b)=>{const ax=nz(a.nickname),bx=nz(b.nickname);return (ax!==ql)-(bx!==ql)||(!ax.startsWith(ql))-(!bx.startsWith(ql))||ax.localeCompare(bx)});
+  await resolveAvatars(users.map(r=>r.avatar));return {q:raw,users,posts,onlyUsers}}
+$('#us-res').addEventListener('click',e=>{const b=e.target.closest('[data-prof]');if(b)openProfile(b.dataset.prof)});
 function cloudErr(e){const m=String(e?.message||e||'');if(/Apelido:/.test(m))return m.replace(/^.*?Apelido:\s*/,'Você ').replace(/"$/,'')+'.';if(e?.code==='23505'||/duplicate key|unique/i.test(m))return 'Esse apelido já é de outra pessoa. Escolha outro.';if(/Limite/.test(m))return m.replace(/^.*?(Limite[^"]*).*$/,'$1')+'.';if(/Failed to fetch|network/i.test(m))return 'Sem conexão com a internet.';if(/JWT|session|auth/i.test(m))return 'Sua sessão expirou. Entre de novo na conta.';return 'Não deu certo agora. Tente de novo.'}
 $('#rc-form').onsubmit=async e=>{e.preventDefault();
   const t=$('#rc-t').value.trim(),c=$('#rc-c').value.trim();if(!t||!c){toast('Preencha o nome da obra e por que você indica.',true);return}
   const kind=$('#rc-k').value,where=$('#rc-w').value.trim();
   if(recTab==='mural'){if(!me){openAuth('in');return}const b=$('#rc-save');b.disabled=true;
     const row={title:t,kind,stars:recStars,body:c,where_read:where||null,nickname:myNick};
-    try{const old=recEdit?mural.find(x=>x.id===recEdit)?.image||null:null;let image=null;
+    try{const old=recEdit?(mural.find(x=>x.id===recEdit)||(srch?srch.posts.find(x=>x.id===recEdit):null))?.image||null:null;let image=null;
       if(postImg?.blob){const path=`${me.id}/${Date.now()}.jpg`;const up=await sb.storage.from('posts').upload(path,postImg.blob,{contentType:'image/jpeg'});if(up.error)throw up.error;image=path}
       else if(postImg?.path)image=postImg.path;
       row.image=image;row.spoiler=!!image&&$('#rc-spo').checked;
       if(old&&old!==image)sb.storage.from('posts').remove([old]).catch(()=>{});
       if(recEdit){const {error}=await sb.from('recs').update({...row,edited_at:new Date().toISOString()}).eq('id',recEdit);if(error)throw error;toast('Indicação atualizada.')}
       else{const {error}=await sb.from('recs').insert(row);if(error)throw error;toast('Publicada no mural!')}
-      resetRecForm();await renderRecs(true)}catch(err){toast(cloudErr(err),true)}finally{b.disabled=false}
+      resetRecForm();$('#rc-dlg').close();await renderRecs(true)}catch(err){toast(cloudErr(err),true)}finally{b.disabled=false}
     return}
   const data={title:t,kind,stars:recStars,text:c,where};
   if(recEdit){Object.assign(recs.find(r=>r.id===recEdit),data,{edited:Date.now()});toast('Indicação atualizada.')}
   else{recs.unshift({id:uid(),...data,date:Date.now(),comments:[]});toast('Indicação salva!')}
-  saveRecs();resetRecForm();renderRecs()};
+  saveRecs();resetRecForm();$('#rc-dlg').close();renderRecs()};
 function starsHtml(n){return `<span class="rstars" aria-label="${n} de 5 estrelas">${[1,2,3,4,5].map(v=>`<i class="${v<=n?'on':''}">${STAR_SVG}</i>`).join('')}</span>`}
 function whereHtml(w){if(!w)return'';const m=w.match(/https?:\/\/[^\s]+/);
   if(m&&/^https:\/\//.test(m[0])){const i=w.indexOf(m[0]);return `<div class="rwhere">Onde ler: ${esc(w.slice(0,i))}<a href="${esc(m[0])}" target="_blank" rel="noopener">${esc(m[0].replace(/^https:\/\//,'').slice(0,50))}</a>${esc(w.slice(i+m[0].length))}</div>`}
@@ -1927,7 +1980,7 @@ function postCard(r,m){const url=r.image?postUrls.get(r.image):null;return `<art
     <div class="pbody"><h3>${esc(r.title)}</h3>${r.stars?starsHtml(r.stars):''}
       <p class="rtext">${esc(r.text)}</p>${whereHtml(r.where)}
       ${url?`<div class="pimg${r.spoiler&&!revealed.has(r.id)?' spo':''}"><img src="${esc(url)}" alt="Imagem da publicação" loading="lazy" data-zoom>${r.spoiler&&!revealed.has(r.id)?'<button type="button" class="reveal" data-reveal>Mostrar spoiler<small>a imagem pode contar o que acontece</small></button>':''}</div>`:''}</div>
-    <div class="pacts"><button class="act" data-focuscom>${I_COM}${r.comments.length||''} Comentar</button><button class="act" data-share>${I_SH}Compartilhar</button>${r.mine?`<button class="act" data-edit>${I_ED}Editar</button>`:''}<span class="spacer"></span>${m&&!r.mine?`<button class="act" data-rrep title="Denunciar">${I_FL}Denunciar</button>`:''}${r.mine||(m&&amAdmin)?`<button class="act del" data-rdel aria-label="Apagar publicação" title="${r.mine?'Apagar':'Apagar (adm)'}">${ICON_TRASH}</button>`:''}</div>
+    <div class="pacts"><button class="act" data-focuscom aria-label="Comentar" title="Comentar">${I_COM}${r.comments.length?`<span class="cnt">${r.comments.length}</span>`:''}</button><button class="act" data-share aria-label="Compartilhar" title="Compartilhar">${I_SH}</button>${r.mine?`<button class="act" data-edit aria-label="Editar" title="Editar">${I_ED}</button>`:''}<span class="spacer"></span>${m&&!r.mine?`<button class="act" data-rrep aria-label="Denunciar" title="Denunciar">${I_FL}</button>`:''}${r.mine||(m&&amAdmin)?`<button class="act del" data-rdel aria-label="Apagar publicação" title="${r.mine?'Apagar':'Apagar (adm)'}">${ICON_TRASH}</button>`:''}</div>
     <div class="rcom"><ul>${r.comments.map(c=>`<li>${m&&c.uid?`<button class="plink" data-prof="${esc(c.uid)}" aria-label="Ver perfil de @${esc(c.by)}">${avatarHtml(c.av,c.by,28)}</button>`:avatarHtml(c.av,c.by||'eu',28)}<div class="cbody">${m&&c.uid?`<button class="plink nm" data-prof="${esc(c.uid)}">@${esc(c.by)}</button>${vb(c.uid)}`:`<b>${c.by?'@'+esc(c.by):'Você'}</b>${vb(c.uid)}`} ${esc(c.text)}<small>${fmtDate(c.date)}${c.mine||(m&&amAdmin)?` · <button class="linkbtn" data-cdel="${esc(c.id)}">apagar</button>`:''}${m&&!c.mine?` · <button class="linkbtn" data-crep="${esc(c.id)}">denunciar</button>`:''}</small></div></li>`).join('')}</ul>
       <form data-cform><input maxlength="500" placeholder="Escreva um comentário…" aria-label="Comentário sobre ${esc(r.title)}"><button class="pill sm">Comentar</button></form></div>
   </article>`}
@@ -1935,17 +1988,20 @@ async function renderRecs(reload){
   const m=recTab==='mural';
   $$('#rc-tabs [data-rt]').forEach(b=>b.setAttribute('aria-selected',b.dataset.rt===recTab));
   $('#rc-tabs').hidden=!sb;$('#rc-ref').hidden=!m||!me;
-  const needLogin=m&&!me;$('#rc-login').hidden=!needLogin;$('#rc-form').hidden=needLogin;
+  $('#rc-fab').hidden=m&&!me;$('#rc-lupa').hidden=!m||!me;if(!m||!me){if(!$('#rc-search').hidden){$('#rc-search').hidden=true;$('#rc-lupa').setAttribute('aria-expanded',false)}srch=null}
+  const needLogin=m&&!me;$('#rc-login').hidden=!needLogin;
   if(needLogin){$('#rc-f').innerHTML='';$('#rc-list').innerHTML='';$('#rc-more').hidden=true;$('#rc-n').textContent='Mural';return}
-  if(m&&reload){$('#rc-list').innerHTML='<p class="space">Carregando o mural…</p>';await loadMural(false)}
-  const src=(m?mural:recs).map(r=>norm2(r,m));
+  if(m&&reload){if(srch){try{srch=await searchQueries(srch.q)}catch{}}else{$('#rc-list').innerHTML='<p class="space">Carregando o mural…</p>';await loadMural(false)}}
+  const S=m&&srch;
+  $('#us-res').innerHTML=S?(S.users.length?`<p class="shd">Contas</p>`+S.users.map(r=>`<button class="urow" data-prof="${esc(r.id)}">${avatarHtml(r.avatar,r.nickname,44)}<span class="unm"><b>@${esc(r.nickname)}${vb(r.id)}</b>${chipsFor(r.id)}</span></button>`).join(''):(S.onlyUsers?`<p class="space">Nenhuma conta com "${esc(S.q.slice(1))}" no apelido.</p>`:''))+(S.onlyUsers?'':`<p class="shd">Publicações</p>`):'';
+  const src=(m?muralSrc():recs).map(r=>norm2(r,m));
   const kinds=['Todos',...new Set(src.map(r=>r.kind))];if(!kinds.includes(recFilter))recFilter='Todos';
   $('#rc-f').innerHTML=src.length>1?kinds.map(k=>`<button data-k="${esc(k)}" aria-pressed="${k===recFilter}">${esc(k)}</button>`).join(''):'';
   const list=src.filter(r=>recFilter==='Todos'||r.kind===recFilter);
-  $('#rc-n').textContent=m?'Mural de todo mundo':(recs.length?`${recs.length} ${recs.length===1?'indicação':'indicações'} só neste aparelho`:'Só neste aparelho');
-  $('#rc-more').hidden=!m||muralEnd||!mural.length;
+  $('#rc-n').textContent=S?`Busca: “${S.q}”`:m?'Mural de todo mundo':(recs.length?`${recs.length} ${recs.length===1?'indicação':'indicações'} só neste aparelho`:'Só neste aparelho');
+  $('#rc-more').hidden=!m||!!S||muralEnd||!mural.length;$('#rc-list').hidden=!!(S&&S.onlyUsers);
   if(m&&muralErr){$('#rc-list').innerHTML=`<div class="card empty"><h3>Não consegui abrir o mural</h3><p>${esc(muralErr)}</p><button class="pill" id="rc-retry">Tentar de novo</button></div>`;return}
-  $('#rc-list').innerHTML=list.length?list.map(r=>postCard(r,m)).join(''):`<div class="card empty"><h3>${src.length?'Nada nesse filtro':(m?'O mural ainda está vazio':'Nenhuma indicação ainda')}</h3><p>${src.length?'Escolha outro tipo acima.':(m?'Seja a primeira pessoa a indicar uma obra!':'Use o formulário acima para guardar uma indicação.')}</p></div>`;
+  $('#rc-list').innerHTML=list.length?list.map(r=>postCard(r,m)).join(''):`<div class="card empty"><h3>${src.length?'Nada nesse filtro':S?'Nenhuma publicação encontrada':(m?'O mural ainda está vazio':'Nenhuma indicação ainda')}</h3><p>${src.length?'Escolha outro tipo acima.':S?`Nenhum post fala de “${esc(S.q)}”. Tente outra palavra.`:(m?'Seja a primeira pessoa a indicar uma obra: toque no + aqui embaixo.':'Toque no + aqui embaixo para guardar uma indicação.')}</p></div>`;
 }
 $('#imgv-x').onclick=()=>$('#imgv').close();
 $('#imgv').addEventListener('click',e=>{if(e.target===$('#imgv'))$('#imgv').close()});
@@ -1967,9 +2023,9 @@ async function postClick(e){const {pf,m,refresh}=ctxOf(e);
   const zm=e.target.closest('[data-zoom]');if(zm&&!zm.closest('.spo')){$('#imgv-i').src=zm.src;$('#imgv').showModal();return}
   const fc=e.target.closest('[data-focuscom]');if(fc){fc.closest('[data-r]').querySelector('[data-cform] input').focus();return}
   const card=e.target.closest('[data-r]');if(!card)return;
-  const raw=(pf?profPosts:m?mural:recs).find(x=>x.id===card.dataset.r);if(!raw)return;const r=norm2(raw,m);
+  const raw=(pf?profPosts:m?muralSrc():recs).find(x=>x.id===card.dataset.r);if(!raw)return;const r=norm2(raw,m);
   if(e.target.closest('[data-edit]')){if(pf){closeProfile();recTab='mural';openRecs();if(!mural.some(x=>x.id===r.id))mural.push(raw)}recEdit=r.id;postImg=r.image?{path:r.image}:null;$('#rc-spo').checked=!!r.spoiler;imgPrev();$('#rc-t').value=r.title;$('#rc-k').value=r.kind;$('#rc-c').value=r.text;$('#rc-w').value=r.where||'';setStars(r.stars||0);
-    $('#rc-h').textContent='Editar indicação';$('#rc-save').textContent='Salvar alterações';$('#rc-cancel').hidden=false;$('#rc-form').scrollIntoView({behavior:'smooth'});$('#rc-t').focus();return}
+    $('#rc-h').textContent='Editar indicação';$('#rc-save').textContent='Salvar alterações';$('#rc-cancel').hidden=false;$('#rc-dlg').showModal();$('#rc-t').focus();return}
   if(e.target.closest('[data-rdel]')){ask(`Apagar a indicação de "${r.title}"?`,'Os comentários dela também serão apagados.',async()=>{
       if(m){const {error}=await sb.from('recs').delete().eq('id',r.id);if(error){toast(cloudErr(error),true);return}if(r.image)sb.storage.from('posts').remove([r.image]).catch(()=>{});await refresh()}
       else{recs=recs.filter(x=>x!==raw);saveRecs();renderRecs()}toast('Indicação apagada.')});return}
