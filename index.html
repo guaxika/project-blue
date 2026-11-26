@@ -157,7 +157,8 @@ textarea{width:100%;min-height:76px;font-size:16px;border:1.5px solid var(--line
 /* estrelas do fundo */
 .stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .stars svg{position:absolute;color:#9cc2e6}
-#app,#reader,#recs,#prof{position:relative;z-index:1}
+#app,#reader,#recs,#prof,#notif{position:relative;z-index:1}
+.nlist{padding:8px}.nlist:empty{display:none}html.dark .nlist{background:#000}.nlist:has(.empty){padding:0;background:none;box-shadow:none}#nt-req .nreq{background:var(--card,#fff)}html.dark #nt-req .nreq{background:#000}
 .ttl{font-family:Quicksand,"Segoe UI Symbol","Noto Sans Symbols 2","Noto Sans Malayalam","Noto Sans",Nunito,sans-serif}
 /* menu ☰ */
 .menubtn{width:48px;height:48px;border-radius:16px;border:0;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 1px var(--line),0 6px 16px -10px rgba(30,50,80,.5);display:grid;place-items:center;cursor:pointer;flex:none;order:3}
@@ -356,6 +357,19 @@ dialog.imgv .dacts{justify-content:center}
 .menuitem svg{width:34px;height:34px;flex:none}
 .menuitem b{display:block;font-size:15px}.menuitem small{display:block;color:var(--mute);font-size:13px;line-height:1.3}
 .menuitem:hover{border-color:#111}
+.menubtn{position:relative}.ndot{position:absolute;top:8px;right:8px;width:11px;height:11px;border-radius:50%;background:#e5484d;box-shadow:0 0 0 2px #fff}.ndot[hidden]{display:none}
+html.dark .ndot{box-shadow:0 0 0 2px #0d1218}
+#opennotif{margin-top:10px}.nbadge{margin-left:auto;min-width:26px;height:26px;padding:0 8px;border-radius:999px;background:#e5484d;color:#fff;font:800 13px/26px Nunito,sans-serif;text-align:center;flex:none}.nbadge[hidden]{display:none}
+.nrow{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px;border:0;border-radius:18px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.nrow:hover{background:rgba(0,0,0,.04)}html.dark .nrow:hover{background:rgba(255,255,255,.06)}
+.nrow.new{background:rgba(61,112,192,.10)}html.dark .nrow.new{background:rgba(91,138,214,.14)}
+.nrow .ntx{flex:1;min-width:0;font-size:14.5px;line-height:1.4}.nrow .ntx small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
+.nrow .nq{display:block;margin-top:4px;padding:6px 10px;border-radius:12px;background:rgba(0,0,0,.05);font-size:13.5px;overflow-wrap:anywhere}html.dark .nrow .nq{background:rgba(255,255,255,.07)}
+.nrow .nic{width:22px;height:22px;flex:none;margin-top:12px}.nic.lk{color:#e5484d}.nic.cm{color:#3d70c0}.nic.fw{color:#2f9e5b}
+.nreq{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px;border-radius:18px;box-shadow:inset 0 0 0 1px var(--line);margin-bottom:8px}.nreq .nm{flex:1 1 150px;min-width:0;overflow-wrap:anywhere}.nreq .nbt{display:flex;gap:8px;margin-left:auto}
+.ndate{margin:14px 6px 6px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.act.like[aria-pressed=true]{color:#e5484d}.act.like[aria-pressed=true] svg path{fill:currentColor}
+.post.flash{animation:flash 2.2s ease-out}@keyframes flash{0%,40%{box-shadow:0 0 0 3px #3d70c0}100%{box-shadow:0 0 0 0 transparent}}
 #recs .rwrap{max-width:820px;padding-bottom:96px}
 .fab{position:fixed;right:max(18px,calc(50vw - 430px));bottom:calc(22px + env(safe-area-inset-bottom));z-index:30;width:60px;height:60px;border-radius:50%;border:0;background:#111;color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 14px 30px -10px rgba(20,40,70,.6),0 0 0 4px rgba(255,255,255,.7);transition:transform .15s}
 .fab:hover{transform:scale(1.06)}.fab:active{transform:scale(.95)}.fab svg{width:28px;height:28px}
@@ -524,7 +538,7 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
   <svg class="deco s3" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="currentColor"/></svg>
   <div class="brand"><span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v10h-8l-5 4v-4H4z" fill="#fff"/><path d="M8 9h8M8 12h5" stroke="#111" stroke-width="1.6" stroke-linecap="round"/></svg></span>
     <h1>Project Blue<small id="modelbl">modo quadrinhos e mangás</small></h1></div>
-  <button class="menubtn" id="menubtn" aria-label="Menu" aria-haspopup="dialog"><span></span></button>
+  <button class="menubtn" id="menubtn" aria-label="Menu" aria-haspopup="dialog"><span></span><i class="ndot" id="ndot" hidden></i></button>
   <nav class="tabbar" role="tablist" aria-label="Seções">
     <button class="tab" role="tab" data-tab="up" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-5 5m5-5 5 5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Traduzir</button>
     <button class="tab" role="tab" data-tab="lib" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16 5l3.5-.8 3 15.6-3.5.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Biblioteca</button>
@@ -635,6 +649,13 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
     <button class="fab" id="rc-fab" aria-label="Escrever uma indicação" title="Escrever"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
   </div>
 </section>
+<section id="notif" hidden>
+  <div class="rbar"><button class="pill ghost sm" id="nt-back">‹ Voltar</button><div class="tt"><b>Notificações</b><span id="nt-n"></span></div></div>
+  <div class="rwrap" style="max-width:640px">
+    <div id="nt-req"></div>
+    <div class="card nlist" id="nt-list"><p class="space">Carregando…</p></div>
+  </div>
+</section>
 <section id="prof" hidden>
   <div class="rbar"><button class="pill ghost sm" id="pf-back">‹ Voltar</button><div class="tt"><b id="pf-tt">Perfil</b><span id="pf-n"></span></div></div>
   <div class="rwrap" style="max-width:760px">
@@ -646,6 +667,7 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
     <div class="rlist" id="pf-list"></div>
   </div>
 </section>
+
 <dialog id="tagdlg">
   <h2>Tag personalizada</h2>
   <p class="hint2" id="tg-who"></p>
@@ -701,6 +723,7 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
   <h2>Menu <button class="icon" id="menux" aria-label="Fechar menu">✕</button></h2>
   <h3>Minha conta</h3>
   <div class="box" id="acct"></div>
+  <button class="menuitem" id="opennotif" hidden><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="3" width="28" height="28" rx="7" fill="#cfe4f7"/><path d="M17 8.5a6 6 0 0 0-6 6v3.6l-1.8 3.2h15.6L23 18.1v-3.6a6 6 0 0 0-6-6z" fill="#111"/><path d="M14.6 23.2a2.5 2.5 0 0 0 4.8 0z" fill="#111"/></svg><span><b>Notificações</b><small>Novos seguidores, pedidos para seguir, comentários e curtidas.</small></span><span class="nbadge" id="nbadge" hidden></span></button>
   <h3>Aparência</h3>
   <div class="themes"><button class="theme" data-theme="light"><i style="background:linear-gradient(135deg,#d9eaf8,#fff)"></i>Claro</button><button class="theme" data-theme="dark"><i style="background:linear-gradient(135deg,#243142,#000)"></i>Escuro</button></div>
   <h3>Modo</h3>
@@ -1517,7 +1540,7 @@ function applyMode(first){
   if(!first){picked=null;openFolderId=null;$('#q').value=''}
   setFile(null);refreshFolderSelect();if(!$('#v-lib').hidden)showLib();
 }
-$('#menubtn').onclick=()=>$('#menu').showModal();
+$('#menubtn').onclick=()=>{$('#menu').showModal();if(me)checkNotif()};
 $('#menux').onclick=()=>$('#menu').close();
 $('#menu').addEventListener('click',e=>{if(e.target===$('#menu'))$('#menu').close()});
 $$('.mode').forEach(b=>b.onclick=()=>{if(MODE!==b.dataset.mode){MODE=b.dataset.mode;ls.set('ms-mode',MODE);closeReader();applyMode();toast(MODE==='livro'?'Modo livros e arquivos':'Modo quadrinhos e mangás')}$('#menu').close()});
@@ -1683,7 +1706,7 @@ async function setUser(u){
     try{const {data}=await sb.from('profiles').select('nickname').eq('id',u.id).maybeSingle();if(data?.nickname)myNick=data.nickname}catch{}
     try{const {data}=await sb.rpc('is_admin');amAdmin=data===true}catch{}
     await loadMyAvatar();await loadAdmins();await loadTags()}else{myAvatar=null;adminSet=new Set()}
-  renderAccount();if(!$('#recs').hidden){resetRecForm();renderRecs(true)}
+  renderAccount();if(!$('#recs').hidden){resetRecForm();renderRecs(true)}startNotif();
   if(u&&u.id!==before)syncNow();
 }
 if(sb){
@@ -1704,7 +1727,7 @@ const chipsFor=uid=>{const h=(adminSet.has(uid)?'<span class="admchip">adm</span
 async function loadAdmins(){try{const {data}=await sb.rpc('admin_ids');adminSet=new Set((data||[]).map(x=>typeof x==='string'?x:(x.admin_ids||x.id)))}catch{}}
 const ownerOk=()=>{const o=ls.get('ms-owner');return !o||!me||o===me.id};
 function renderAccount(){
-  const box=$('#acct');if(!box)return;
+  const box=$('#acct');if(!box)return;{const o=$('#opennotif');if(o)o.hidden=!me||!sb}
   if(!sb){box.innerHTML='<p>A conta não está disponível neste navegador.</p>';return}
   if(!me){box.innerHTML=`<p>Entre na sua conta para participar do mural e ter a mesma biblioteca no celular e no computador.</p><div class="row"><button class="pill sm" data-auth="in">Entrar</button><button class="pill ghost sm" data-auth="up">Criar conta</button></div>`;return}
   box.innerHTML=`<div class="who"><button class="whoav" id="avbtn" aria-label="Trocar foto de perfil">${avatarHtml(myAvatar,myNick,46)}</button><div><b>@${esc(myNick||'sem apelido')}</b>${amAdmin?VB:''}${chipsFor(me.id)}<small>${esc(me.email||'')}</small></div></div>
@@ -1880,7 +1903,7 @@ const saveRecs=()=>ls.set('ms-recs',recs);
 const fmtDate=t=>new Date(t).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
 function setStars(v){recStars=v;$$('#rc-s button').forEach(b=>{const on=+b.dataset.v<=v;b.classList.toggle('on',on);b.setAttribute('aria-checked',+b.dataset.v===v)})}
 $$('#rc-s button').forEach(b=>b.onclick=()=>setStars(recStars===+b.dataset.v?0:+b.dataset.v));
-function openRecs(){$('#menu').close();closeReader();if($('#recs').hidden)navPush();$('#app').hidden=true;$('#recs').hidden=false;document.body.classList.add('reading');srch=null;$('#rc-search').hidden=true;$('#us-q').value='';$('#us-res').innerHTML='';$('#rc-lupa').setAttribute('aria-expanded',false);resetRecForm();renderRecs(true);window.scrollTo(0,0)}
+function openRecs(){$('#menu').close();closeReader();if(!$('#notif').hidden){$('#notif').hidden=true;navPop()}if($('#recs').hidden)navPush();$('#app').hidden=true;$('#recs').hidden=false;document.body.classList.add('reading');srch=null;$('#rc-search').hidden=true;$('#us-q').value='';$('#us-res').innerHTML='';$('#rc-lupa').setAttribute('aria-expanded',false);resetRecForm();renderRecs(true);window.scrollTo(0,0)}
 function closeRecs(){if($('#recs').hidden)return;navPop();$('#recs').hidden=true;$('#app').hidden=false;document.body.classList.remove('reading')}
 $('#openrecs').onclick=openRecs;$('#rc-back').onclick=closeRecs;
 $('#rc-tabs').onclick=e=>{const b=e.target.closest('[data-rt]');if(!b||b.dataset.rt===recTab)return;recTab=b.dataset.rt;srch=null;$('#rc-search').hidden=true;$('#us-q').value='';$('#rc-lupa').setAttribute('aria-expanded',false);recFilter='Todos';resetRecForm();renderRecs(true)};
@@ -1966,21 +1989,22 @@ async function loadMural(more){
 async function enrichPosts(data){const ids=data.map(r=>r.id);let coms=[];
   if(ids.length){const r=await sb.from('rec_comments').select('id,rec_id,user_id,nickname,body,created_at').in('rec_id',ids).order('created_at',{ascending:true});if(r.error)throw r.error;coms=r.data||[]}
     (data||[]).forEach(r=>r.comments=coms.filter(c=>c.rec_id===r.id));
+    if(ids.length){try{const lk=await sb.from('rec_likes').select('rec_id,user_id').in('rec_id',ids);if(!lk.error)(data||[]).forEach(r=>{const l=(lk.data||[]).filter(x=>x.rec_id===r.id);r.likes=l.length;r.liked=!!me&&l.some(x=>x.user_id===me.id)})}catch{}}
     const uids=[...new Set([...(data||[]).map(r=>r.user_id),...coms.map(c=>c.user_id)])];
     if(uids.length){try{const pr=await sb.from('profiles').select('id,avatar').in('id',uids);const av=new Map((pr.data||[]).map(x=>[x.id,x.avatar]));
       (data||[]).forEach(r=>{r.avatar=av.get(r.user_id)||null;r.comments.forEach(c=>c.avatar=av.get(c.user_id)||null)});await resolveAvatars([...av.values()])}catch{}}
     const imgs=(data||[]).map(r=>r.image).filter(x=>x&&!postUrls.has(x));
     if(imgs.length){try{const {data:su}=await sb.storage.from('posts').createSignedUrls(imgs,3600);(su||[]).forEach(d=>{if(d.signedUrl)postUrls.set(d.path,d.signedUrl)})}catch{}}
 }
-const norm2=(r,mm=recTab==='mural')=>mm?{id:r.id,uid:r.user_id,title:r.title,kind:r.kind,stars:r.stars,text:r.body,where:r.where_read,date:r.created_at,edited:r.edited_at,by:r.nickname,av:r.avatar,image:r.image,spoiler:r.spoiler,mine:me&&r.user_id===me.id,comments:(r.comments||[]).map(c=>({id:c.id,text:c.body,date:c.created_at,by:c.nickname,av:c.avatar,uid:c.user_id,mine:me&&c.user_id===me.id}))}
+const norm2=(r,mm=recTab==='mural')=>mm?{id:r.id,uid:r.user_id,title:r.title,kind:r.kind,stars:r.stars,text:r.body,where:r.where_read,date:r.created_at,edited:r.edited_at,by:r.nickname,av:r.avatar,image:r.image,spoiler:r.spoiler,likes:r.likes||0,liked:!!r.liked,mine:me&&r.user_id===me.id,comments:(r.comments||[]).map(c=>({id:c.id,text:c.body,date:c.created_at,by:c.nickname,av:c.avatar,uid:c.user_id,mine:me&&c.user_id===me.id}))}
   :{...r,by:myNick||'',av:myAvatar,uid:me?.id,mine:true,comments:(r.comments||[]).map((c,k)=>({id:k,text:c.text,date:c.date,by:myNick||'',av:myAvatar,uid:me?.id,mine:true}))};
-const I_COM='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',I_SH='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0-4 4m4-4 4 4M5 13v7h14v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',I_ED='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',I_FL='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4h11l-1 4 4 1v8H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+const I_HEART='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.4-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.8-7.5 10.2-7.5 10.2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',I_COM='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',I_SH='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0-4 4m4-4 4 4M5 13v7h14v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',I_ED='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',I_FL='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4h11l-1 4 4 1v8H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
 function postCard(r,m){const url=r.image?postUrls.get(r.image):null;return `<article class="card rcard post" data-r="${esc(r.id)}">
     <div class="phead">${m&&r.uid?`<button class="plink" data-prof="${esc(r.uid)}" aria-label="Ver perfil de @${esc(r.by)}">`:'<span class="plink">'}${avatarHtml(r.av,r.by||'eu',44)}<span class="pwho"><b>${r.by?'@'+esc(r.by):'Você'}${vb(r.uid)}</b><span>${fmtDate(r.date)}${r.edited?' · editada':''}</span></span>${m&&r.uid?'</button>':'</span>'}<span class="chip">${esc(r.kind)}</span></div>
     <div class="pbody"><h3>${esc(r.title)}</h3>${r.stars?starsHtml(r.stars):''}
       <p class="rtext">${esc(r.text)}</p>${whereHtml(r.where)}
       ${url?`<div class="pimg${r.spoiler&&!revealed.has(r.id)?' spo':''}"><img src="${esc(url)}" alt="Imagem da publicação" loading="lazy" data-zoom>${r.spoiler&&!revealed.has(r.id)?'<button type="button" class="reveal" data-reveal>Mostrar spoiler<small>a imagem pode contar o que acontece</small></button>':''}</div>`:''}</div>
-    <div class="pacts"><button class="act" data-focuscom aria-label="Comentar" title="Comentar">${I_COM}${r.comments.length?`<span class="cnt">${r.comments.length}</span>`:''}</button><button class="act" data-share aria-label="Compartilhar" title="Compartilhar">${I_SH}</button>${r.mine?`<button class="act" data-edit aria-label="Editar" title="Editar">${I_ED}</button>`:''}<span class="spacer"></span>${m&&!r.mine?`<button class="act" data-rrep aria-label="Denunciar" title="Denunciar">${I_FL}</button>`:''}${r.mine||(m&&amAdmin)?`<button class="act del" data-rdel aria-label="Apagar publicação" title="${r.mine?'Apagar':'Apagar (adm)'}">${ICON_TRASH}</button>`:''}</div>
+    <div class="pacts">${m?`<button class="act like" data-like aria-pressed="${!!r.liked}" aria-label="${r.liked?'Descurtir':'Curtir'}" title="Curtir">${I_HEART}${r.likes?`<span class="cnt">${r.likes}</span>`:''}</button>`:''}<button class="act" data-focuscom aria-label="Comentar" title="Comentar">${I_COM}${r.comments.length?`<span class="cnt">${r.comments.length}</span>`:''}</button><button class="act" data-share aria-label="Compartilhar" title="Compartilhar">${I_SH}</button>${r.mine?`<button class="act" data-edit aria-label="Editar" title="Editar">${I_ED}</button>`:''}<span class="spacer"></span>${m&&!r.mine?`<button class="act" data-rrep aria-label="Denunciar" title="Denunciar">${I_FL}</button>`:''}${r.mine||(m&&amAdmin)?`<button class="act del" data-rdel aria-label="Apagar publicação" title="${r.mine?'Apagar':'Apagar (adm)'}">${ICON_TRASH}</button>`:''}</div>
     <div class="rcom"><ul>${r.comments.map(c=>`<li>${m&&c.uid?`<button class="plink" data-prof="${esc(c.uid)}" aria-label="Ver perfil de @${esc(c.by)}">${avatarHtml(c.av,c.by,28)}</button>`:avatarHtml(c.av,c.by||'eu',28)}<div class="cbody">${m&&c.uid?`<button class="plink nm" data-prof="${esc(c.uid)}">@${esc(c.by)}</button>${vb(c.uid)}`:`<b>${c.by?'@'+esc(c.by):'Você'}</b>${vb(c.uid)}`} ${esc(c.text)}<small>${fmtDate(c.date)}${c.mine||(m&&amAdmin)?` · <button class="linkbtn" data-cdel="${esc(c.id)}">apagar</button>`:''}${m&&!c.mine?` · <button class="linkbtn" data-crep="${esc(c.id)}">denunciar</button>`:''}</small></div></li>`).join('')}</ul>
       <form data-cform><input maxlength="500" placeholder="Escreva um comentário…" aria-label="Comentário sobre ${esc(r.title)}"><button class="pill sm">Comentar</button></form></div>
   </article>`}
@@ -2022,6 +2046,13 @@ async function postClick(e){const {pf,m,refresh}=ctxOf(e);
   const rv=e.target.closest('[data-reveal]');if(rv){revealed.add(rv.closest('[data-r]').dataset.r);const box=rv.closest('.pimg');box.classList.remove('spo');rv.remove();return}
   const zm=e.target.closest('[data-zoom]');if(zm&&!zm.closest('.spo')){$('#imgv-i').src=zm.src;$('#imgv').showModal();return}
   const fc=e.target.closest('[data-focuscom]');if(fc){fc.closest('[data-r]').querySelector('[data-cform] input').focus();return}
+  const lkb=e.target.closest('[data-like]');if(lkb&&m){const card=lkb.closest('[data-r]'),raw=(pf?profPosts:muralSrc()).find(x=>x.id===card.dataset.r);if(!raw||lkb.disabled)return;
+    lkb.disabled=true;const on=!raw.liked;raw.liked=on;raw.likes=Math.max(0,(raw.likes||0)+(on?1:-1));
+    const paint=()=>{lkb.setAttribute('aria-pressed',raw.liked);lkb.setAttribute('aria-label',raw.liked?'Descurtir':'Curtir');lkb.innerHTML=I_HEART+(raw.likes?`<span class="cnt">${raw.likes}</span>`:'')};paint();
+    try{const {error}=on?await sb.from('rec_likes').insert({rec_id:raw.id}):await sb.from('rec_likes').delete().eq('rec_id',raw.id).eq('user_id',me.id);
+      if(error&&!(on&&(error.code==='23505'||/duplicate/i.test(error.message||''))))throw error}
+    catch(err){raw.liked=!on;raw.likes=Math.max(0,raw.likes+(on?-1:1));paint();toast(/rec_likes|does not exist|schema cache/i.test(err?.message||'')?'As curtidas ainda não foram ativadas no banco (parte 11).':cloudErr(err),true)}
+    finally{lkb.disabled=false}return}
   const card=e.target.closest('[data-r]');if(!card)return;
   const raw=(pf?profPosts:m?muralSrc():recs).find(x=>x.id===card.dataset.r);if(!raw)return;const r=norm2(raw,m);
   if(e.target.closest('[data-edit]')){if(pf){closeProfile();recTab='mural';openRecs();if(!mural.some(x=>x.id===r.id))mural.push(raw)}recEdit=r.id;postImg=r.image?{path:r.image}:null;$('#rc-spo').checked=!!r.spoiler;imgPrev();$('#rc-t').value=r.title;$('#rc-k').value=r.kind;$('#rc-c').value=r.text;$('#rc-w').value=r.where||'';setStars(r.stars||0);
@@ -2044,8 +2075,8 @@ $('#rc-list').addEventListener('click',postClick);
 let profUid=null,profPosts=[],profFrom=null,banPick=undefined;
 async function openProfile(uid,keep){
   if(!sb)return;if(!me){openAuth('in');return}
-  if(!keep){if($('#prof').hidden){profFrom=!$('#recs').hidden?'recs':'app';navPush()}$('#menu').open&&$('#menu').close();closeReader()}
-  profUid=uid;$('#app').hidden=true;$('#recs').hidden=true;$('#prof').hidden=false;document.body.classList.add('reading');if(!keep)window.scrollTo(0,0);
+  if(!keep){if($('#prof').hidden){profFrom=!$('#recs').hidden?'recs':!$('#notif').hidden?'notif':'app';navPush()}$('#menu').open&&$('#menu').close();closeReader()}
+  profUid=uid;$('#app').hidden=true;$('#recs').hidden=true;$('#notif').hidden=true;$('#prof').hidden=false;document.body.classList.add('reading');if(!keep)window.scrollTo(0,0);
   $('#pf-list').innerHTML='<p class="space">Carregando…</p>';
   try{const {data:pr,error}=await sb.from('profiles').select('id,nickname,avatar,bio,banner,created_at,nickname_changed_at,private').eq('id',uid).maybeSingle();if(error)throw error;
     if(!pr){$('#pf-name').textContent='Perfil não encontrado';$('#pf-list').innerHTML='';return}
@@ -2080,7 +2111,7 @@ async function openProfile(uid,keep){
     $('#prof').dataset.bio=pr.bio||'';$('#prof').dataset.nca=pr.nickname_changed_at||'';$('#prof').dataset.banner=pr.banner||'';
   }catch(err){console.warn(err);$('#pf-list').innerHTML=`<div class="card empty"><h3>Não consegui abrir o perfil</h3><p>${esc(cloudErr(err))}</p></div>`}
 }
-function closeProfile(){if($('#prof').hidden)return;navPop();$('#prof').hidden=true;if(profFrom==='recs'){$('#recs').hidden=false;renderRecs(true)}else{$('#app').hidden=false;document.body.classList.remove('reading')}}
+function closeProfile(){if($('#prof').hidden)return;navPop();$('#prof').hidden=true;if(profFrom==='recs'){$('#recs').hidden=false;renderRecs(true)}else if(profFrom==='notif'){$('#notif').hidden=false;loadNotif(false)}else{$('#app').hidden=false;document.body.classList.remove('reading')}}
 $('#pf-back').onclick=closeProfile;
 $('#pf-list').addEventListener('click',postClick);$('#pf-list').addEventListener('submit',postSubmit);
 $('#prof').addEventListener('click',async e=>{if(e.target.closest('#pf-edit')){openProfEdit();return}
@@ -2135,6 +2166,59 @@ $('#pe-ok').onclick=async()=>{const b=$('#pe-ok');b.disabled=true;$('#pe-err').t
     if('banner' in upd&&old&&old!==upd.banner)sb.storage.from('avatars').remove([old]).catch(()=>{});
     myPrivate=upd.private;if(nickChange){myNick=nn;renderAccount();mural=[]}
     $('#pedit').close();toast(nickChange?`Pronto! Agora você é @${nn}.`:'Perfil atualizado!');openProfile(me.id,true)}catch(err){$('#pe-err').textContent=cloudErr(err)}finally{b.disabled=false}};
+/* ---------- notificações ---------- */
+let notifUnread=0,notifTimer=0;
+async function checkNotif(){if(!sb||!me){notifUnread=0;paintNotif();return}
+  try{const {data,error}=await sb.from('notifications').select('id').eq('user_id',me.id).eq('seen',false).limit(99);if(error)throw error;notifUnread=(data||[]).length}catch{notifUnread=0}
+  paintNotif()}
+function paintNotif(){const n=notifUnread;$('#ndot').hidden=!n;$('#nbadge').hidden=!n;$('#nbadge').textContent=n>98?'99+':n;$('#opennotif').hidden=!me||!sb;
+  $('#menubtn').setAttribute('aria-label',n?`Menu (${n} ${n===1?'notificação nova':'notificações novas'})`:'Menu')}
+function startNotif(){clearInterval(notifTimer);checkNotif();if(me)notifTimer=setInterval(checkNotif,60000)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me)checkNotif()});
+const NIC={like:`<span class="nic lk">${'<svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.4-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.8-7.5 10.2-7.5 10.2z" fill="currentColor"/></svg>'}</span>`,
+  comment:'<span class="nic cm"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="currentColor"/></svg></span>',
+  follow:'<span class="nic fw"><svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="4" fill="currentColor"/><path d="M2.5 20c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5zM19 7v6M16 10h6" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>'};
+NIC.accepted=NIC.follow;
+function ago(d){const s=(Date.now()-new Date(d))/1000;if(s<60)return 'agora';if(s<3600)return `há ${Math.floor(s/60)} min`;if(s<86400)return `há ${Math.floor(s/3600)} h`;if(s<86400*7){const n=Math.floor(s/86400);return `há ${n} ${n===1?'dia':'dias'}`}return fmtDate(d)}
+let notifRows=[];
+async function openNotif(){if(!me){openAuth('in');return}$('#menu').open&&$('#menu').close();closeReader();
+  if($('#notif').hidden)navPush();$('#app').hidden=true;$('#recs').hidden=true;$('#prof').hidden=true;$('#notif').hidden=false;document.body.classList.add('reading');window.scrollTo(0,0);
+  $('#nt-req').innerHTML='';$('#nt-list').innerHTML='<p class="space">Carregando…</p>';await loadNotif(true)}
+function closeNotif(){if($('#notif').hidden)return;navPop();$('#notif').hidden=true;$('#app').hidden=false;document.body.classList.remove('reading')}
+async function loadNotif(markSeen){
+  try{const {data,error}=await sb.from('notifications').select('id,actor_id,kind,rec_id,snippet,seen,created_at').eq('user_id',me.id).order('created_at',{ascending:false}).range(0,59);if(error)throw error;
+    notifRows=data||[];
+    const actors=[...new Set(notifRows.map(n=>n.actor_id))];let prof=new Map();
+    if(actors.length){const pr=await sb.from('profiles').select('id,nickname,avatar').in('id',actors);prof=new Map((pr.data||[]).map(x=>[x.id,x]));await resolveAvatars([...prof.values()].map(x=>x.avatar))}
+    const recIds=[...new Set(notifRows.map(n=>n.rec_id).filter(Boolean))];let titles=new Map();
+    if(recIds.length){try{const rr=await sb.from('recs').select('id,title').in('id',recIds);titles=new Map((rr.data||[]).map(x=>[x.id,x.title]))}catch{}}
+    const who=n=>{const p=prof.get(n.actor_id);return p?p:{id:n.actor_id,nickname:'alguém',avatar:null}};
+    const reqs=notifRows.filter(n=>n.kind==='request');
+    $('#nt-req').innerHTML=reqs.length?`<p class="ndate">Pedidos para seguir (${reqs.length})</p>`+reqs.map(n=>{const p=who(n);return `<div class="nreq"><button class="plink" data-prof="${esc(p.id)}" aria-label="Ver perfil de @${esc(p.nickname)}">${avatarHtml(p.avatar,p.nickname,40)}</button><span class="nm"><b>@${esc(p.nickname)}</b>${vb(p.id)}<small style="display:block;color:var(--mute)">quer seguir você · ${ago(n.created_at)}</small></span><span class="nbt"><button class="pill sm" data-nacc="${esc(p.id)}">Aceitar</button><button class="pill ghost sm" data-nrej="${esc(p.id)}">Recusar</button></span></div>`}).join(''):'';
+    const rest=notifRows.filter(n=>n.kind!=='request');
+    const txt=n=>{const p=who(n),nm=`<b>@${esc(p.nickname)}</b>${vb(p.id)}`,t=titles.get(n.rec_id);
+      if(n.kind==='follow')return `${nm} começou a seguir você.`;
+      if(n.kind==='accepted')return `${nm} aceitou seu pedido para seguir.`;
+      if(n.kind==='like')return `${nm} curtiu sua publicação${t?` <b>${esc(t)}</b>`:''}.`;
+      if(n.kind==='comment')return `${nm} comentou na sua publicação${t?` <b>${esc(t)}</b>`:''}:${n.snippet?`<span class="nq">${esc(n.snippet)}</span>`:''}`;return nm};
+    $('#nt-list').innerHTML=rest.length?rest.map(n=>{const p=who(n);return `<button class="nrow${n.seen?'':' new'}" data-nid="${esc(n.id)}">${avatarHtml(p.avatar,p.nickname,44)}<span class="ntx">${txt(n)}<small>${ago(n.created_at)}</small></span>${NIC[n.kind]||''}</button>`}).join('')
+      :(reqs.length?'':`<div class="card empty"><h3>Nada por aqui ainda</h3><p>Quando alguém seguir você, curtir ou comentar nas suas publicações, aparece aqui.</p></div>`);
+    if(markSeen&&notifRows.some(n=>!n.seen&&n.kind!=='request')){await sb.from('notifications').update({seen:true}).eq('user_id',me.id).eq('seen',false).neq('kind','request')}
+    notifUnread=reqs.filter(n=>!n.seen).length;paintNotif();$('#nt-n').textContent=reqs.length?`${reqs.length} ${reqs.length===1?'pedido para seguir':'pedidos para seguir'}`:'Seguidores, comentários e curtidas';
+  }catch(err){$('#nt-list').innerHTML=`<div class="card empty"><h3>Não consegui abrir as notificações</h3><p>${/notifications|does not exist|schema cache/i.test(err?.message||'')?'As notificações ainda não foram ativadas no banco (parte 11).':esc(cloudErr(err))}</p></div>`}}
+$('#opennotif').onclick=openNotif;
+$('#nt-back').onclick=closeNotif;
+$('#notif').addEventListener('click',async e=>{
+  const pl=e.target.closest('[data-prof]');if(pl){openProfile(pl.dataset.prof);return}
+  const ac=e.target.closest('[data-nacc]'),rj=e.target.closest('[data-nrej]');
+  if(ac||rj){const b=ac||rj;b.disabled=true;const id=b.dataset.nacc||b.dataset.nrej;
+    const q=ac?sb.from('follows').update({status:'accepted'}).eq('follower',id).eq('followee',me.id):sb.from('follows').delete().eq('follower',id).eq('followee',me.id);
+    const {error}=await q;if(error){toast(cloudErr(error),true);b.disabled=false;return}toast(ac?'Pedido aceito!':'Pedido recusado.');loadNotif(false);return}
+  const row=e.target.closest('[data-nid]');if(!row)return;const n=notifRows.find(x=>x.id===row.dataset.nid);if(!n)return;
+  if(n.kind==='follow'||n.kind==='accepted'){openProfile(n.actor_id);return}
+  await openProfile(me.id);const card=document.querySelector(`#pf-list [data-r="${CSS.escape(n.rec_id||'')}"]`);
+  if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.remove('flash');void card.offsetWidth;card.classList.add('flash')}
+  else toast('Essa publicação não existe mais.',true)});
 /* ---------- tags personalizadas (só a adm dá ou tira) ---------- */
 let tagFor=null;
 const tgColor=()=>(document.querySelector('input[name=tg-c]:checked')||{}).value||'#f2b705';
@@ -2162,19 +2246,21 @@ function applyTheme(t){const d=t==='dark';document.documentElement.classList.tog
 $$('.theme').forEach(b=>b.onclick=()=>{ls.set('ms-theme',b.dataset.theme);applyTheme(b.dataset.theme)});
 applyTheme(ls.get('ms-theme')||'light');
 /* ---------- botão "voltar" do navegador/celular ---------- */
-let skipPop=0,fromPop=false,dlgStack=[];
-function navPush(){try{history.pushState({pb:Date.now()},'')}catch{}}
-function navPop(n){if(fromPop)return;skipPop++;try{history.go(-(n||1))}catch{skipPop--}}
+let skipPop=0,fromPop=false,dlgStack=[],pushAfter=0;
+// voltar do navegador é assíncrono: se um "voltar" ainda está a caminho, a próxima entrada espera por ele
+function navPush(){if(skipPop>0){pushAfter++;return}try{history.pushState({pb:Date.now()},'')}catch{}}
+function navPop(n){if(fromPop)return;n=n||1;while(n>0&&pushAfter>0){pushAfter--;n--}if(!n)return;skipPop++;try{history.go(-n)}catch{skipPop--}}
 {const _sm=HTMLDialogElement.prototype.showModal;
  HTMLDialogElement.prototype.showModal=function(){const was=this.open;_sm.call(this);if(was)return;dlgStack.push(this);navPush();
    this.addEventListener('close',()=>{dlgStack=dlgStack.filter(x=>x!==this);if(this._byPop){this._byPop=false;return}navPop()},{once:true})}}
 window.addEventListener('popstate',()=>{
-  if(skipPop>0){skipPop--;return}
+  if(skipPop>0){skipPop--;if(!skipPop)while(pushAfter>0){pushAfter--;try{history.pushState({pb:Date.now()},'')}catch{}}return}
   const d=dlgStack[dlgStack.length-1];if(d){d._byPop=true;d.close();return}
   fromPop=true;
   try{
     if(!$('#reader').hidden)closeReader();
     else if(!$('#prof').hidden)closeProfile();
+    else if(!$('#notif').hidden)closeNotif();
     else if(!$('#recs').hidden)closeRecs();
     else if(!$('#v-lib').hidden&&openFolderId){openFolderId=null;showLib()}
     else if(!$('#v-lib').hidden)tab('up');
