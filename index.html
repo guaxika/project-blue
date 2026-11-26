@@ -129,6 +129,20 @@ main{max-width:1140px;margin:0 auto;padding:18px max(4vw,16px) 90px}
 .ov{position:absolute;inset:0;pointer-events:none}
 .bx{position:absolute;pointer-events:auto;display:flex;align-items:center;justify-content:center;text-align:center;background:#fff;color:#111;border-radius:40%/36%;font:700 16px/1.1 "Comic Neue","Comic Sans MS",Nunito,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;padding:2px 3px;overflow:hidden;cursor:pointer;text-transform:uppercase}
 .hideov .ov{display:none}
+/* páginas contínuas (quadrinhos) */
+#pages.hq .page{border-radius:0}
+#pages.hq article:first-child .page{border-radius:6px 6px 0 0}
+#pages.hq article:last-child .page{border-radius:0 0 6px 6px}
+#pages.hq .lst{margin:10px 0}
+.pst{position:absolute;left:8px;top:8px;z-index:3;background:rgba(255,255,255,.94);color:#2b3036;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700;box-shadow:0 4px 12px -6px rgba(0,0,0,.45);pointer-events:none}
+.pst.ok{display:none}
+/* fim do capítulo */
+.rend{margin:26px 4px 0;background:#fff;border-radius:22px;padding:22px 18px;text-align:center;box-shadow:inset 0 0 0 1px var(--line)}
+.rend b{display:block;font:700 19px/1.25 Quicksand,sans-serif;color:var(--ink);margin-bottom:6px;overflow-wrap:anywhere}
+.rend p{margin:0 0 16px;color:var(--mute);font-size:14px;overflow-wrap:anywhere}
+.rend .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.rend .row+.row{margin-top:10px}
+.rend:empty{display:none}
 .pbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:8px 4px 16px;font-size:13px;color:var(--mute)}
 .st{display:inline-flex;align-items:center;gap:6px}
 .st::before{content:"";width:9px;height:9px;border-radius:50%;background:#b7c0c9}
@@ -475,7 +489,7 @@ html.dark body.book .rbar{background:rgba(18,14,23,.92)}
 html.dark .tx{background:#0d1218;color:#e6ebf2}html.dark body.book .tx{background:#120e17}
 html.dark .tx .para .o{border-left-color:#2c3b4f}
 html.dark .lst,html.dark .rules,html.dark .lgrules{background:#0d1218;color:var(--ink)}
-html.dark .page{background:#000}
+html.dark .page{background:#000}html.dark .rend{background:#000}html.dark .pst{background:rgba(20,26,34,.94);color:var(--ink)}
 html.dark .chip{background:#223047;color:#cfe0f5}html.dark body.book .chip{background:#2f2540;color:#e2d6f7}
 html.dark .rstars i,html.dark .stars-in button{color:#3a4555}html.dark .rstars i.on,html.dark .stars-in button.on{color:#e6ebf2}
 html.dark .rfilter button{background:transparent;color:var(--ink);border-color:var(--line)}
@@ -617,6 +631,7 @@ html.dark .lgcursor path{fill:#dbe7ff;stroke:#3d70c0}
     <div class="opts" id="opts-tx" hidden><label><input type="checkbox" id="o-orig"> Mostrar o original junto</label></div>
     <button class="pill" id="resume" hidden></button>
     <div id="pages"></div>
+    <div class="rend" id="rd-end"></div>
   </div>
 </section>
 
@@ -1092,8 +1107,9 @@ async function openReader(id){
   $('#rd-t').textContent=ch.title;$('#app').hidden=true;$('#reader').hidden=false;document.body.classList.add('reading');
   const tx=ch.kind==='text';$('#opts-hq').hidden=tx;$('#opts-tx').hidden=!tx;$('.rwrap').classList.toggle('wide',tx);
   if(tx)$('#pages').innerHTML=ps.map(p=>`<article id="pg${p.i}" data-i="${p.i}"><div class="unit">${esc(p.label||'Parte '+(p.i+1))}</div><div class="tx" id="tx${p.i}"></div><div class="pbar"><span class="st" id="st${p.i}"></span><button class="pill ghost sm one" data-i="${p.i}">Traduzir de novo</button></div></article>`).join('');
-  else $('#pages').innerHTML=ps.map(p=>`<article id="pg${p.i}" data-i="${p.i}"><div class="page"><img alt="Página ${p.i+1}" src="${p.url||''}"><div class="ov"></div></div><div class="pbar"><span class="st" id="st${p.i}"></span><button class="pill ghost sm one" data-i="${p.i}">Ler de novo</button></div><div class="lst" id="ls${p.i}"></div></article>`).join('');
-  ps.forEach(paint);readerBtns();
+  else $('#pages').innerHTML=ps.map(p=>`<article id="pg${p.i}" data-i="${p.i}"><div class="page"><img alt="Página ${p.i+1}" src="${p.url||''}"><div class="ov"></div><span class="st pst" id="st${p.i}"></span></div><div class="lst" id="ls${p.i}"></div></article>`).join('');
+  $('#pages').classList.toggle('hq',!tx);$('#rd-end').innerHTML='';
+  ps.forEach(paint);readerBtns();renderEnd(ch);
   const start=ch.progress||0;$('#resume').hidden=!start;$('#resume').textContent=`Continuar ${tx?'da parte':'da página'} ${start+1}`;
   window.scrollTo(0,0);
   reader.io?.disconnect();const vis=new Map();let tm=null;
@@ -1107,10 +1123,30 @@ $('#rd-back').onclick=closeReader;
 $('#resume').onclick=()=>{$('#pg'+(reader.ch.progress||0))?.scrollIntoView();$('#resume').hidden=true};
 function readerBtns(){if(!reader.ch)return;const id=reader.ch.id,j=jobs[id],ok=reader.ps.filter(p=>p.state==='ok').length;
   $('#rd-s').textContent=`${reader.ps.length} ${reader.ch.kind==='text'?'partes':'páginas'} · ${ok} traduzidas`;
-  $('#rd-go').hidden=!!j||ok>=reader.ps.length;$('#rd-stop').hidden=!j;}
+  $('#rd-go').hidden=!!j||ok>=reader.ps.length;$('#rd-stop').hidden=!j;
+  const re=$('#rd-re');if(re){re.disabled=!!j;re.textContent=j?'Traduzindo…':(reader.ch.kind==='text'?'Traduzir tudo de novo':'Traduzir o capítulo de novo')}}
 $('#rd-go').onclick=()=>translateChapter(reader.ch,reader.ps);
 $('#rd-stop').onclick=()=>stopJob(reader.ch.id);
 $('#rd-dl').onclick=e=>downloadPdf(reader.ch.id,e.currentTarget);
+/* fim do capítulo: próximo capítulo ou aviso de que acabou, e traduzir de novo */
+async function renderEnd(ch){
+  const box=$('#rd-end');box.innerHTML='';
+  let sibs=[],f=null;try{[sibs,f]=await Promise.all([byIdx('chapters','folder',ch.folder),one('folders',ch.folder)])}catch{}
+  if(reader.ch?.id!==ch.id)return;
+  sibs.sort((a,b)=>natural(a.title,b.title));const nx=sibs[sibs.findIndex(c=>c.id===ch.id)+1];
+  const u=ch.kind==='text'?'arquivo':'capítulo';
+  box.innerHTML=(nx
+    ?`<b>Fim ${u==='arquivo'?'do arquivo':'do capítulo'} ✦</b><p>Próximo: ${esc(nx.title)}</p><div class="row"><button class="pill" id="rd-next" data-id="${esc(nx.id)}">Próximo ${u} ›</button></div>`
+    :`<b>Acabou! ✦</b><p>Você chegou ao último ${u}${f?` de ${esc(f.name)}`:''} por enquanto.</p><div class="row"><button class="pill" id="rd-fim">‹ Voltar para a obra</button></div>`)
+    +`<div class="row"><button class="pill ghost sm" id="rd-re"></button></div>`;
+  readerBtns();
+}
+$('#rd-end').addEventListener('click',e=>{
+  const n=e.target.closest('#rd-next');if(n){openReader(n.dataset.id);return}
+  if(e.target.closest('#rd-fim')){closeReader();return}
+  if(e.target.closest('#rd-re')&&reader.ch){const ch=reader.ch,ps=reader.ps,tx=ch.kind==='text';
+    ask(tx?'Traduzir tudo de novo?':'Traduzir o capítulo de novo?',tx?'Todas as partes vão ser lidas e traduzidas outra vez.':'Todas as páginas vão ser lidas e traduzidas outra vez. As correções que você fez à mão nas falas serão substituídas.',()=>{if(reader.ch!==ch)return;ps.forEach(p=>{if(p.state!=='run'&&p.state!=='wait')p.state='idle'});translateChapter(ch,ps,true);window.scrollTo(0,0)},'Traduzir de novo')}
+});
 $('#pages').addEventListener('click',e=>{
   const b=e.target.closest('button.one');if(b){const p=reader.ps[+b.dataset.i];p.state='idle';translateChapter(reader.ch,[p],true);return}
   const bx=e.target.closest('.bx');if(bx)edit(reader.ps[+bx.dataset.k.split(':')[0]],+bx.dataset.k.split(':')[1]);
@@ -1124,9 +1160,9 @@ function paint(p){
     box.innerHTML=p.paras?p.paras.map((o,k)=>`<div class="para"><p>${esc(p.tr?p.tr[k]:o)}</p>${p.tr?`<p class="o">${esc(o)}</p>`:''}</div>`).join(''):'<p class="para" style="color:var(--mute)">Página escaneada: o texto vai aparecer quando for lido.</p>';
     readerBtns();return}
   const ov=$('#pg'+p.i+' .ov'),lst=$('#ls'+p.i),st=$('#st'+p.i),btn=$('#pg'+p.i+' button.one');if(!ov)return;
-  st.className='st '+({ok:'ok',run:'run',bad:'bad'}[p.state]||'');
-  st.textContent=`Página ${p.i+1}`+({ok:' · traduzida',run:' · '+(p.step||'lendo…'),bad:' · falhou',wait:' · na fila'}[p.state]||'');
-  btn.disabled=p.state==='run'||p.state==='wait';btn.textContent=p.state==='ok'?'Ler de novo':'Traduzir página';
+  st.className='st pst '+({ok:'ok',run:'run',bad:'bad'}[p.state]||'');
+  st.textContent=`Página ${p.i+1}`+({ok:' · traduzida',run:' · '+(p.step||'lendo…'),bad:' · falhou',wait:' · na fila'}[p.state]||' · ainda não traduzida');
+  if(btn){btn.disabled=p.state==='run'||p.state==='wait';btn.textContent=p.state==='ok'?'Ler de novo':'Traduzir página'}
   const it=p.items||[];
   ov.innerHTML=it.map((t,k)=>`<div class="bx" data-k="${p.i}:${k}" title="${esc(t.o)}" style="left:${t.x}%;top:${t.y}%;width:${t.w}%;height:${t.h}%">${esc(t.t||'…')}</div>`).join('');
   lst.innerHTML=it.length?`<ol>${it.map(t=>`<li>${esc(t.t)}<small>${esc(t.o)}</small></li>`).join('')}</ol>`:`<small>${p.state==='ok'?'Nenhum texto encontrado nesta página.':'Ainda não traduzida.'}</small>`;
